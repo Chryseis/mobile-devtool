@@ -2,25 +2,26 @@
   "name": "mobile-devtool",
   "version": "0.1.0",
   "private": true,
+  "main": "dist/main.js",
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "@types/jest": "^27.5.2",
     "@types/node": "^16.18.60",
-    "@types/react": "^18.2.33",
+    "@types/react": "^  18.2.33",
     "@types/react-dom": "^18.2.14",
+    "electron": "^27.0.2",
+    "electron-is-dev": "^2.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-scripts": "5.0.1",
-    "typescript": "^4.9.5",
-    "web-vitals": "^2.1.4"
+    "typescript": "^4.9.5"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "start": "craco start",
+    "build": "craco build && tsc -p tsconfig.electron.json",
+    "dev": "concurrently -k \"yarn start\" \"yarn electron\"",
+    "electron": "wait-on tcp:3000 && tsc -p tsconfig.electron.json -w && nodemon --exec electron ."
   },
   "eslintConfig": {
     "extends": [
@@ -39,5 +40,13 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@craco/craco": "^7.1.0",
+    "concurrently": "^8.2.2",
+    "nodemon": "^3.0.1",
+    "prettier": "^3.0.3",
+    "react-scripts": "^5.0.1",
+    "wait-on": "^7.0.1"
   }
 }
