@@ -5,10 +5,11 @@ import isDev from 'electron-is-dev'
 async function createWindow() {
   // Create the browser window.
   const win = new BrowserWindow({
-    width: 10000,
+    width: 1000,
     height: 800,
     webPreferences: {
       nodeIntegration: true,
+      preload: path.join(__dirname, 'preload.js'),
     },
   })
 
