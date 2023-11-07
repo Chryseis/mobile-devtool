@@ -2,7 +2,7 @@ import path from 'path'
 import { app, BrowserWindow } from 'electron'
 import isDev from 'electron-is-dev'
 
-async function createWindow() {
+async function createWindow(): Promise<void> {
   // Create the browser window.
   const win = new BrowserWindow({
     width: 1000,
