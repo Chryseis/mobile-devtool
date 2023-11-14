@@ -5,17 +5,20 @@ import isDev from 'electron-is-dev'
 async function createWindow(): Promise<void> {
   // Create the browser window.
   const win = new BrowserWindow({
-    width: 1000,
+    width: 1200,
     height: 800,
     webPreferences: {
       nodeIntegration: true,
       preload: path.join(__dirname, 'preload.js'),
+      webviewTag: true,
     },
   })
 
   // and load the index.html of the app.
   // win.loadFile("index.html");
-  await win.loadURL(isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, '../build/index.html')}`)
+  await win.loadURL(
+    isDev ? 'http://localhost:3000/#devtoolsPanel' : `file://${path.join(__dirname, '../build/index.html')}`
+  )
   // Open the DevTools.
   if (isDev) {
     win.webContents.openDevTools({ mode: 'detach' })
