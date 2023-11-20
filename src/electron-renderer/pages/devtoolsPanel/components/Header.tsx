@@ -4,7 +4,7 @@ import { Avatar, Input, Select } from 'antd'
 import { ReloadOutlined } from '@ant-design/icons'
 import avatar from '@/assets/images/avatar.jpeg'
 
-const FunctionBar: IStyledComponent<'web'> = styled.div`
+const FunctionBar = styled.div`
   flex: 1;
   display: flex;
   align-items: center;

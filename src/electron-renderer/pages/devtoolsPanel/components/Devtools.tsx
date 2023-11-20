@@ -1,7 +1,7 @@
 import React from 'react'
-import styled, { IStyledComponent } from 'styled-components'
+import styled from 'styled-components'
 
-const DevtoolsWrapper: IStyledComponent<'web'> = styled.div`
+const DevtoolsWrapper = styled.div`
   flex: 1;
 `
 
