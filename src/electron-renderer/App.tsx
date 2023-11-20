@@ -3,13 +3,32 @@ import { RouterProvider } from 'react-router-dom'
 import router from './routes'
 import GlobalStyle from '@/components/GlobalStyle'
 import { ThemeProvider } from 'styled-components'
+import { ConfigProvider } from 'antd'
 import theme from './theme'
 
-function App() {
+function App(): React.JSX.Element {
   return (
     <ThemeProvider theme={theme}>
       <GlobalStyle />
-      <RouterProvider router={router} />
+      <ConfigProvider
+        theme={{
+          token: {
+            colorPrimary: theme.colorPrimary,
+          },
+          components: {
+            Input: {
+              ...theme.component,
+              ...theme.input,
+            },
+            Select: {
+              ...theme.component,
+              ...theme.select,
+            },
+          },
+        }}
+      >
+        <RouterProvider router={router} />
+      </ConfigProvider>
     </ThemeProvider>
   )
 }

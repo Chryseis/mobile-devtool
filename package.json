@@ -4,6 +4,7 @@
   "private": true,
   "main": "dist/main.js",
   "dependencies": {
+    "@ant-design/icons": "^5.2.6",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
@@ -22,7 +23,7 @@
   },
   "scripts": {
     "start": "craco start",
-    "build": "craco build && tsc -p tsconfig.electron.json",
+    "build": "craco build",
     "dev": "concurrently -k \"yarn start\" \"yarn build:main\" \"yarn electron\"",
     "build:main": "tsc -w -p tsconfig.electron.json",
     "electron": "wait-on tcp:3000 && nodemon --exec electron ."

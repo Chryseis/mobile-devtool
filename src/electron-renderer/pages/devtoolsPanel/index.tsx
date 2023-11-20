@@ -20,7 +20,7 @@ const MainWrapper: IStyledComponent<'web'> = styled.div`
 function DevtoolsPanel(): React.JSX.Element {
   return (
     <PanelWrapper>
-      <Header></Header>
+      <Header />
       <MainWrapper>
         <Simulator></Simulator>
         <Devtools></Devtools>

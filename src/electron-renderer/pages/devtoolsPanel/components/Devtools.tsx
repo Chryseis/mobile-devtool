@@ -6,7 +6,11 @@ const DevtoolsWrapper: IStyledComponent<'web'> = styled.div`
 `
 
 const Devtools: React.FC = () => {
-  return <DevtoolsWrapper>devtools</DevtoolsWrapper>
+  return (
+    <DevtoolsWrapper>
+      <webview></webview>
+    </DevtoolsWrapper>
+  )
 }
 
 export default Devtools
