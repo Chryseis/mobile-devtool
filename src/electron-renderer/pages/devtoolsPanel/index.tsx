@@ -22,7 +22,7 @@ function DevtoolsPanel(): React.JSX.Element {
     <PanelWrapper>
       <Header />
       <MainWrapper>
-        <Simulator></Simulator>
+        <Simulator minWidth='10%' maxWidth='60%'></Simulator>
         <Devtools></Devtools>
       </MainWrapper>
     </PanelWrapper>

@@ -1,11 +1,12 @@
-import React, { useEffect, useRef, RefObject } from 'react'
+import React, { useEffect, useRef, RefObject, useState } from 'react'
 import styled from 'styled-components'
+import { calcWidth } from '@/shared/utils'
 
-const SimulatorWrapper = styled.div<{ ref: RefObject<HTMLDivElement> }>`
+const SimulatorWrapper = styled.div<{ ref: RefObject<HTMLDivElement>; style: React.CSSProperties }>`
   position: relative;
   display: flex;
   flex-direction: column;
-  width: 300px;
+  width: 30vw;
   background-color: ${(props) => props.theme.colorBgContent};
 
   .webview {
@@ -23,24 +24,40 @@ const SplitLine = styled.div`
   cursor: col-resize;
 `
 
-const Simulator: React.FC = () => {
+const Simulator: React.FC<{ minWidth: number | string; maxWidth: number | string }> = (props) => {
   const simulatorRef = useRef<HTMLDivElement>(null)
+  const [simulatorWidth, setSimulatorWidth] = useState<number | string>('30vw')
 
   useEffect(() => {
     if (simulatorRef.current) {
-      console.log('simulatorRef', simulatorRef.current)
+      setSimulatorWidth(simulatorRef.current.clientWidth)
     }
 
     return () => {}
   }, [])
 
   const onMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
-    const left: number = e.clientX
-    const top: number = e.clientY
+    const startX: number = e.clientX
+
+    const simulatorWidth = simulatorRef.current?.clientWidth
+
+    const minOffset = calcWidth(props.minWidth, window.screen.width)
+    const maxOffset = calcWidth(props.maxWidth, window.screen.width)
+
+    window.addEventListener('mousemove', (event: MouseEvent) => {
+      const x = event.clientX
+
+      const deltaOffset = x - startX
+
+      if (simulatorWidth) {
+        const clientWidth = simulatorWidth + deltaOffset
+        setSimulatorWidth(clientWidth)
+      }
+    })
   }
 
   return (
-    <SimulatorWrapper ref={simulatorRef}>
+    <SimulatorWrapper ref={simulatorRef} style={{ width: simulatorWidth }}>
       <webview className='webview'></webview>
       <SplitLine onMouseDown={onMouseDown} />
     </SimulatorWrapper>
