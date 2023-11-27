@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, RefObject, useState } from 'react'
+import React, { useEffect, useRef, RefObject, useState, Dispatch, SetStateAction } from 'react'
 import styled from 'styled-components'
 import { calcWidth } from '@/shared/utils'
 
@@ -24,7 +24,12 @@ const SplitLine = styled.div`
   cursor: col-resize;
 `
 
-const Simulator: React.FC<{ minWidth: number | string; maxWidth: number | string }> = (props) => {
+const Simulator: React.FC<{
+  minWidth: number | string
+  maxWidth: number | string
+  moving: boolean
+  setMoving: Dispatch<SetStateAction<boolean>>
+}> = (props) => {
   const simulatorRef = useRef<HTMLDivElement>(null)
   const [simulatorWidth, setSimulatorWidth] = useState<number | string>('30vw')
 
@@ -37,28 +42,39 @@ const Simulator: React.FC<{ minWidth: number | string; maxWidth: number | string
   }, [])
 
   const onMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
-    const startX: number = e.clientX
-
     const simulatorWidth = simulatorRef.current?.clientWidth
 
     const minOffset = calcWidth(props.minWidth, window.screen.width)
     const maxOffset = calcWidth(props.maxWidth, window.screen.width)
 
-    window.addEventListener('mousemove', (event: MouseEvent) => {
+    const mousemoveHandle = (event: MouseEvent) => {
+      props.setMoving(true)
       const x = event.clientX
 
-      const deltaOffset = x - startX
-
       if (simulatorWidth) {
-        const clientWidth = simulatorWidth + deltaOffset
-        setSimulatorWidth(clientWidth)
+        if (x < minOffset) {
+          setSimulatorWidth(minOffset)
+        } else if (x > maxOffset) {
+          setSimulatorWidth(maxOffset)
+        } else {
+          setSimulatorWidth(x)
+        }
       }
-    })
+    }
+
+    const mouseupHandle = () => {
+      props.setMoving(false)
+      document?.removeEventListener('mousemove', mousemoveHandle)
+      document?.removeEventListener('mouseup', mouseupHandle)
+    }
+
+    document?.addEventListener('mousemove', mousemoveHandle)
+    document?.addEventListener('mouseup', mouseupHandle)
   }
 
   return (
     <SimulatorWrapper ref={simulatorRef} style={{ width: simulatorWidth }}>
-      <webview className='webview'></webview>
+      <webview id='webview' className='webview' style={{ pointerEvents: props.moving ? 'none' : 'auto' }}></webview>
       <SplitLine onMouseDown={onMouseDown} />
     </SimulatorWrapper>
   )
