@@ -1,8 +1,11 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
 import styled, { IStyledComponent, useTheme } from 'styled-components'
 import { Avatar, Input, Select } from 'antd'
 import { ReloadOutlined } from '@ant-design/icons'
 import avatar from '@/assets/images/avatar.jpeg'
+import { RootState } from '@/store'
+import { changeURL } from '@/store/modules/devtools'
 
 const FunctionBar = styled.div`
   flex: 1;
@@ -31,13 +34,19 @@ const HeaderWrapper: IStyledComponent<'web'> = styled.div`
 const Header: React.FC = () => {
   const theme = useTheme()
 
+  const [protocol, setProtocol] = useState<string>('http://')
+
+  const url = useSelector((state: RootState) => state.devtools.url)
+
+  const dispatch = useDispatch()
+
   return (
     <HeaderWrapper>
       <Avatar className='avatar' shape='square' src={avatar} />
       <FunctionBar>
         <Input
           addonBefore={
-            <Select defaultValue='http://'>
+            <Select value={protocol} onChange={(value) => setProtocol(value)}>
               <Select.Option value='http://'>http://</Select.Option>
               <Select.Option value='https://'>https://</Select.Option>
             </Select>
@@ -45,6 +54,8 @@ const Header: React.FC = () => {
           addonAfter={<ReloadOutlined style={{ color: theme.icon.colorPrimary }} />}
           className='search'
           allowClear
+          value={url}
+          onChange={(e) => dispatch(changeURL(e.target.value))}
         />
       </FunctionBar>
     </HeaderWrapper>

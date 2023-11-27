@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, RefObject, useState, Dispatch, SetStateAction } from 'react'
+import { useSelector } from 'react-redux'
 import styled from 'styled-components'
 import { calcWidth } from '@/shared/utils'
+import { RootState } from '@/store'
 
 const SimulatorWrapper = styled.div<{ ref: RefObject<HTMLDivElement>; style: React.CSSProperties }>`
   position: relative;
@@ -32,6 +34,7 @@ const Simulator: React.FC<{
 }> = (props) => {
   const simulatorRef = useRef<HTMLDivElement>(null)
   const [simulatorWidth, setSimulatorWidth] = useState<number | string>('30vw')
+  const url = useSelector((state: RootState) => state.devtools.url)
 
   useEffect(() => {
     if (simulatorRef.current) {
@@ -74,7 +77,12 @@ const Simulator: React.FC<{
 
   return (
     <SimulatorWrapper ref={simulatorRef} style={{ width: simulatorWidth }}>
-      <webview id='webview' className='webview' style={{ pointerEvents: props.moving ? 'none' : 'auto' }}></webview>
+      <webview
+        id='webview'
+        className='webview'
+        style={{ pointerEvents: props.moving ? 'none' : 'auto' }}
+        src={url}
+      ></webview>
       <SplitLine onMouseDown={onMouseDown} />
     </SimulatorWrapper>
   )
