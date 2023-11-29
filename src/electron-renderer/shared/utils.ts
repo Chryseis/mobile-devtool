@@ -12,3 +12,15 @@ export const calcWidth = (value: number | string, totalWidth: number): number =>
     return (Number(number) / 100) * totalWidth
   }
 }
+
+export const emittedOnce = (element: Element | null, eventName: string): Promise<Event> => {
+  return new Promise((resolve) => {
+    element?.addEventListener(
+      eventName,
+      (e) => {
+        resolve(e)
+      },
+      { once: true }
+    )
+  })
+}

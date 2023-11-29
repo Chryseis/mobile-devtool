@@ -1,11 +1,13 @@
-import React, { useState } from 'react'
+import React, { useRef } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import styled, { IStyledComponent, useTheme } from 'styled-components'
+import styled, { useTheme } from 'styled-components'
+import type { IStyledComponent } from 'styled-components'
 import { Avatar, Input, Select } from 'antd'
+import type { InputRef } from 'antd'
 import { ReloadOutlined } from '@ant-design/icons'
 import avatar from '@/assets/images/avatar.jpeg'
-import { RootState } from '@/store'
-import { changeURL } from '@/store/modules/devtools'
+import type { RootState } from '@/store'
+import { changeProtocol, changeURL, confirmSrc } from '@/store/modules/devtools'
 
 const FunctionBar = styled.div`
   flex: 1;
@@ -32,9 +34,11 @@ const HeaderWrapper: IStyledComponent<'web'> = styled.div`
 `
 
 const Header: React.FC = () => {
+  const inputRef = useRef<InputRef>(null)
+
   const theme = useTheme()
 
-  const [protocol, setProtocol] = useState<string>('http://')
+  const protocol = useSelector((state: RootState) => state.devtools.protocol)
 
   const url = useSelector((state: RootState) => state.devtools.url)
 
@@ -45,17 +49,29 @@ const Header: React.FC = () => {
       <Avatar className='avatar' shape='square' src={avatar} />
       <FunctionBar>
         <Input
+          ref={inputRef}
           addonBefore={
-            <Select value={protocol} onChange={(value) => setProtocol(value)}>
+            <Select value={protocol} onChange={(val) => dispatch(changeProtocol(val))}>
               <Select.Option value='http://'>http://</Select.Option>
               <Select.Option value='https://'>https://</Select.Option>
             </Select>
           }
-          addonAfter={<ReloadOutlined style={{ color: theme.icon.colorPrimary }} />}
+          addonAfter={
+            <ReloadOutlined
+              style={{ color: theme.icon.colorPrimary }}
+              onClick={() => {
+                dispatch(confirmSrc())
+              }}
+            />
+          }
           className='search'
           allowClear
           value={url}
           onChange={(e) => dispatch(changeURL(e.target.value))}
+          onPressEnter={() => {
+            inputRef.current?.blur()
+            dispatch(confirmSrc())
+          }}
         />
       </FunctionBar>
     </HeaderWrapper>

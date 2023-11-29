@@ -1,5 +1,5 @@
 import path from 'path'
-import { app, BrowserWindow } from 'electron'
+import { app, BrowserWindow, webContents } from 'electron'
 import isDev from 'electron-is-dev'
 
 async function createWindow(): Promise<void> {
@@ -23,6 +23,15 @@ async function createWindow(): Promise<void> {
   if (isDev) {
     win.webContents.openDevTools({ mode: 'detach' })
   }
+
+  win.webContents.ipc.on('set-devtools', (event, { simulatorContentId, devtoolsContentId }) => {
+    const simulatorContent = webContents.fromId(simulatorContentId)
+    const devtoolsContent = webContents.fromId(devtoolsContentId)
+    if (devtoolsContent) {
+      simulatorContent?.setDevToolsWebContents(devtoolsContent)
+      simulatorContent?.openDevTools()
+    }
+  })
 }
 
 // This method will be called when Electron has finished

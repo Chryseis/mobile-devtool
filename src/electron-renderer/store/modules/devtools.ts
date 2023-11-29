@@ -1,8 +1,10 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { createSlice } from '@reduxjs/toolkit'
+import type { PayloadAction } from '@reduxjs/toolkit'
 
-const initialState = {
-  protocol: '',
-  url: '',
+const initialState: Record<string, any> = {
+  protocol: 'http://',
+  url: 'capsule-mobile.91jkys.com/mobile.html#/zh-CN/',
+  src: 'https://capsule-mobile.91jkys.com/mobile.html#/zh-CN/',
 }
 
 export const devtoolsSlice = createSlice({
@@ -13,12 +15,14 @@ export const devtoolsSlice = createSlice({
       state.protocol = action.payload
     },
     changeURL(state, action: PayloadAction<string>) {
-      console.log('payload', action.payload)
       state.url = action.payload
+    },
+    confirmSrc(state) {
+      state.src = state.protocol + state.url
     },
   },
 })
 
-export const { changeURL } = devtoolsSlice.actions
+export const { changeURL, changeProtocol, confirmSrc } = devtoolsSlice.actions
 
 export default devtoolsSlice.reducer

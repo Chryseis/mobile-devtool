@@ -13,7 +13,12 @@ const DevtoolsWrapper = styled.div`
 const Devtools: React.FC<{ moving: boolean }> = (props) => {
   return (
     <DevtoolsWrapper>
-      <webview className='webview' style={{ pointerEvents: props.moving ? 'none' : 'auto' }}></webview>
+      <webview
+        id='devtoolsWebview'
+        className='webview'
+        src='devtools://devtools/bundled/devtools_app.html'
+        style={{ pointerEvents: props.moving ? 'none' : 'auto' }}
+      ></webview>
     </DevtoolsWrapper>
   )
 }

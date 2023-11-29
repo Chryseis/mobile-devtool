@@ -34,7 +34,7 @@ const Simulator: React.FC<{
 }> = (props) => {
   const simulatorRef = useRef<HTMLDivElement>(null)
   const [simulatorWidth, setSimulatorWidth] = useState<number | string>('30vw')
-  const url = useSelector((state: RootState) => state.devtools.url)
+  const src = useSelector((state: RootState) => state.devtools.src)
 
   useEffect(() => {
     if (simulatorRef.current) {
@@ -78,10 +78,11 @@ const Simulator: React.FC<{
   return (
     <SimulatorWrapper ref={simulatorRef} style={{ width: simulatorWidth }}>
       <webview
-        id='webview'
+        id='simulatorWebview'
         className='webview'
         style={{ pointerEvents: props.moving ? 'none' : 'auto' }}
-        src={url}
+        useragent='Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1'
+        src={src}
       ></webview>
       <SplitLine onMouseDown={onMouseDown} />
     </SimulatorWrapper>
