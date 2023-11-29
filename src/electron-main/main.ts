@@ -1,8 +1,10 @@
 import path from 'path'
-import { app, BrowserWindow, webContents } from 'electron'
+import { app, BrowserWindow, webContents, nativeTheme } from 'electron'
 import isDev from 'electron-is-dev'
 
 async function createWindow(): Promise<void> {
+  nativeTheme.themeSource = 'dark'
+
   // Create the browser window.
   const win = new BrowserWindow({
     width: 1200,

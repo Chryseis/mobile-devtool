@@ -4,6 +4,7 @@ const theme: DefaultTheme = {
   colorPrimary: '#52c41a',
   colorBgBase: '#424242',
   colorBgContent: '#292929',
+  colorBgToolbar: '#383838',
   borderRadius: 6,
   fontSize: 14,
   component: {
@@ -14,6 +15,8 @@ const theme: DefaultTheme = {
   input: {
     colorPrimary: '#fff',
     colorPrimaryActive: '#fff',
+    colorTextQuaternary: 'rgba(255,255,255,0.65)',
+    colorTextTertiary: 'rgba(255,255,255,0.85)',
   },
   select: {
     colorPrimary: '#fff',

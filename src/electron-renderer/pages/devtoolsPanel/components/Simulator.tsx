@@ -4,6 +4,8 @@ import styled from 'styled-components'
 import { calcWidth } from '@/shared/utils'
 import { RootState } from '@/store'
 
+const DEFAULT_WIDTH = '50vh'
+
 const SimulatorWrapper = styled.div<{ ref: RefObject<HTMLDivElement>; style: React.CSSProperties }>`
   position: relative;
   display: flex;
@@ -12,8 +14,28 @@ const SimulatorWrapper = styled.div<{ ref: RefObject<HTMLDivElement>; style: Rea
   background-color: ${(props) => props.theme.colorBgContent};
 
   .webview {
-    flex: 1;
+    position: absolute;
+    top: 50px;
+    left: 50%;
+    transform: translate(-50%, 0);
+    width: 375px;
+    height: 667px;
   }
+`
+
+const Toolbar = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 10px;
+  height: 27px;
+  background-color: ${(props) => props.theme.colorBgToolbar};
+`
+
+const SimulatorShell = styled.div`
+  flex: 1;
+  position: relative;
+  overflow: auto;
 `
 
 const SplitLine = styled.div`
@@ -33,7 +55,7 @@ const Simulator: React.FC<{
   setMoving: Dispatch<SetStateAction<boolean>>
 }> = (props) => {
   const simulatorRef = useRef<HTMLDivElement>(null)
-  const [simulatorWidth, setSimulatorWidth] = useState<number | string>('30vw')
+  const [simulatorWidth, setSimulatorWidth] = useState<number | string>(DEFAULT_WIDTH)
   const src = useSelector((state: RootState) => state.devtools.src)
 
   useEffect(() => {
@@ -77,13 +99,16 @@ const Simulator: React.FC<{
 
   return (
     <SimulatorWrapper ref={simulatorRef} style={{ width: simulatorWidth }}>
-      <webview
-        id='simulatorWebview'
-        className='webview'
-        style={{ pointerEvents: props.moving ? 'none' : 'auto' }}
-        useragent='Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1'
-        src={src}
-      ></webview>
+      <Toolbar />
+      <SimulatorShell>
+        <webview
+          id='simulatorWebview'
+          className='webview'
+          style={{ pointerEvents: props.moving ? 'none' : 'auto' }}
+          useragent='Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1'
+          src={src}
+        ></webview>
+      </SimulatorShell>
       <SplitLine onMouseDown={onMouseDown} />
     </SimulatorWrapper>
   )
