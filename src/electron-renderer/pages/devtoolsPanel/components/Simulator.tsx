@@ -3,8 +3,9 @@ import { useSelector } from 'react-redux'
 import styled from 'styled-components'
 import { calcWidth } from '@/shared/utils'
 import { RootState } from '@/store'
+import { Device } from '@/pages/devtoolsPanel'
 
-const DEFAULT_WIDTH = '50vh'
+const DEFAULT_WIDTH = '50vw'
 
 const SimulatorWrapper = styled.div<{ ref: RefObject<HTMLDivElement>; style: React.CSSProperties }>`
   position: relative;
@@ -53,6 +54,8 @@ const Simulator: React.FC<{
   maxWidth: number | string
   moving: boolean
   setMoving: Dispatch<SetStateAction<boolean>>
+  devices: Array<Device>
+  scaleList: Array<string>
 }> = (props) => {
   const simulatorRef = useRef<HTMLDivElement>(null)
   const [simulatorWidth, setSimulatorWidth] = useState<number | string>(DEFAULT_WIDTH)
@@ -99,7 +102,9 @@ const Simulator: React.FC<{
 
   return (
     <SimulatorWrapper ref={simulatorRef} style={{ width: simulatorWidth }}>
-      <Toolbar />
+      <Toolbar>
+        <div className='toolbar-item'></div>
+      </Toolbar>
       <SimulatorShell>
         <webview
           id='simulatorWebview'

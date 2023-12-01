@@ -5,6 +5,8 @@ const initialState: Record<string, any> = {
   protocol: 'http://',
   url: 'capsule-mobile.91jkys.com/mobile.html#/zh-CN/',
   src: 'https://capsule-mobile.91jkys.com/mobile.html#/zh-CN/',
+  device: {},
+  scale: 0.75,
 }
 
 export const devtoolsSlice = createSlice({

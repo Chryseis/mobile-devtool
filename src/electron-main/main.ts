@@ -1,5 +1,6 @@
 import path from 'path'
 import { app, BrowserWindow, webContents, nativeTheme } from 'electron'
+import type { WebContents } from 'electron'
 import isDev from 'electron-is-dev'
 
 async function createWindow(): Promise<void> {
@@ -27,13 +28,26 @@ async function createWindow(): Promise<void> {
   }
 
   win.webContents.ipc.on('set-devtools', (event, { simulatorContentId, devtoolsContentId }) => {
-    const simulatorContent = webContents.fromId(simulatorContentId)
-    const devtoolsContent = webContents.fromId(devtoolsContentId)
-    if (devtoolsContent) {
-      simulatorContent?.setDevToolsWebContents(devtoolsContent)
-      simulatorContent?.openDevTools()
+    const simulatorContents = webContents.fromId(simulatorContentId) as WebContents
+    const devtoolsContents = webContents.fromId(devtoolsContentId) as WebContents
+
+    if (devtoolsContents) {
+      simulatorContents.setDevToolsWebContents(devtoolsContents)
+      simulatorContents.openDevTools({ mode: 'detach' })
+
+      if (!simulatorContents.debugger.isAttached()) {
+        simulatorContents.debugger.attach('1.3')
+        simulatorContents.debugger.sendCommand('Emulation.setDeviceMetricsOverride', {
+          width: 300, // 你可以设置手机视图的宽度
+          height: 667, // 你可以设置手机视图的高度
+          deviceScaleFactor: 2, // 缩放因子
+          mobile: true,
+        })
+      }
     }
   })
+
+  win.webContents.ipc.on('set-device-metrics', (e, metrics) => {})
 }
 
 // This method will be called when Electron has finished

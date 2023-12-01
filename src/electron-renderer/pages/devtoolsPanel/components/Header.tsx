@@ -33,7 +33,7 @@ const HeaderWrapper: IStyledComponent<'web'> = styled.div`
   }
 `
 
-const Header: React.FC = () => {
+const Header: React.FC<{ reloadSimulator: () => void }> = (props) => {
   const inputRef = useRef<InputRef>(null)
 
   const theme = useTheme()
@@ -56,14 +56,7 @@ const Header: React.FC = () => {
               <Select.Option value='https://'>https://</Select.Option>
             </Select>
           }
-          addonAfter={
-            <ReloadOutlined
-              style={{ color: theme.icon.colorPrimary }}
-              onClick={() => {
-                dispatch(confirmSrc())
-              }}
-            />
-          }
+          addonAfter={<ReloadOutlined style={{ color: theme.icon.colorPrimary }} onClick={props.reloadSimulator} />}
           className='search'
           allowClear
           value={url}

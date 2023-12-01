@@ -3,7 +3,7 @@ import { DefaultTheme } from 'styled-components'
 const theme: DefaultTheme = {
   colorPrimary: '#52c41a',
   colorBgBase: '#424242',
-  colorBgContent: '#292929',
+  colorBgContent: '#2e2e2e',
   colorBgToolbar: '#383838',
   borderRadius: 6,
   fontSize: 14,
