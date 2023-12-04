@@ -7,6 +7,7 @@ declare module 'styled-components' {
     colorPrimary: string
     colorBgBase: string
     colorBgContent: string
+    colorText: string
     borderRadius: number
     fontSize: number
   }

@@ -1,9 +1,14 @@
-import React, { useEffect, useRef, RefObject, useState, Dispatch, SetStateAction } from 'react'
-import { useSelector } from 'react-redux'
+import type { Dispatch, RefObject, SetStateAction } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import styled from 'styled-components'
+import { CascaderProps, Popover, Cascader } from 'antd'
+import { CaretDownOutlined } from '@ant-design/icons'
 import { calcWidth } from '@/shared/utils'
-import { RootState } from '@/store'
-import { Device } from '@/pages/devtoolsPanel'
+import type { RootState } from '@/store'
+import type { Device } from '@/pages/devtoolsPanel'
+import { ellipsis } from '@/shared/css'
+import { changeScale, changeDevice } from '@/store/modules/devtools'
 
 const DEFAULT_WIDTH = '50vw'
 
@@ -19,8 +24,6 @@ const SimulatorWrapper = styled.div<{ ref: RefObject<HTMLDivElement>; style: Rea
     top: 50px;
     left: 50%;
     transform: translate(-50%, 0);
-    width: 375px;
-    height: 667px;
   }
 `
 
@@ -31,6 +34,15 @@ const Toolbar = styled.div`
   padding: 0 10px;
   height: 27px;
   background-color: ${(props) => props.theme.colorBgToolbar};
+
+  .toolbar-item {
+    display: flex;
+    gap: 6px;
+    font-size: ${(props) => props.theme.contentFontSize + 'px'};
+    color: ${(props) => props.theme.colorText};
+    ${ellipsis};
+    cursor: pointer;
+  }
 `
 
 const SimulatorShell = styled.div`
@@ -49,17 +61,45 @@ const SplitLine = styled.div`
   cursor: col-resize;
 `
 
+const DevicePanel = styled(Cascader.Panel)`
+  border: none;
+  max-height: 300px;
+  overflow-y: auto;
+`
+
 const Simulator: React.FC<{
   minWidth: number | string
   maxWidth: number | string
   moving: boolean
   setMoving: Dispatch<SetStateAction<boolean>>
   devices: Array<Device>
-  scaleList: Array<string>
+  scaleList: Array<number>
 }> = (props) => {
   const simulatorRef = useRef<HTMLDivElement>(null)
   const [simulatorWidth, setSimulatorWidth] = useState<number | string>(DEFAULT_WIDTH)
+  const [open, setOpen] = useState<boolean>(false)
   const src = useSelector((state: RootState) => state.devtools.src)
+  const device = useSelector((state: RootState) => state.devtools.device)
+  const scale = useSelector((state: RootState) => state.devtools.scale)
+  const dispatch = useDispatch()
+
+  const cascaderData = useMemo<CascaderProps['options']>(() => {
+    return [
+      {
+        label: '机型',
+        value: 'device',
+        children: props.devices.map((o) => ({
+          label: `${o.title}（${o.screen.vertical.width}x${o.screen.vertical.height}｜Dpr:${o.screen['device-pixel-ratio']}）`,
+          value: o.title,
+        })),
+      },
+      {
+        label: '显示比例',
+        value: 'scale',
+        children: props.scaleList.map((o) => ({ label: `${o * 100}%`, value: o })),
+      },
+    ] as CascaderProps['options']
+  }, [props.devices, props.scaleList])
 
   useEffect(() => {
     if (simulatorRef.current) {
@@ -100,17 +140,53 @@ const Simulator: React.FC<{
     document?.addEventListener('mouseup', mouseupHandle)
   }
 
+  const onChangeDevice = (value: Array<string | number>) => {
+    const [menu1, menu2] = value
+
+    if (menu1 === 'device') {
+      const device = props.devices.find((o) => o.title === menu2) as Device
+      dispatch(changeDevice(device))
+    } else {
+      dispatch(changeScale(menu2 as number))
+    }
+
+    setOpen(false)
+  }
+
   return (
     <SimulatorWrapper ref={simulatorRef} style={{ width: simulatorWidth }}>
       <Toolbar>
-        <div className='toolbar-item'></div>
+        <Popover
+          overlayInnerStyle={{ padding: 0 }}
+          trigger='click'
+          arrow={false}
+          open={open}
+          onOpenChange={(open) => setOpen(open)}
+          content={
+            <DevicePanel
+              options={cascaderData}
+              expandTrigger='hover'
+              onChange={(value: any) => onChangeDevice(value)}
+            />
+          }
+        >
+          <div className='toolbar-item'>
+            <span>{device.title}</span>
+            <span>{`${scale * 100}%`}</span>
+            <CaretDownOutlined />
+          </div>
+        </Popover>
       </Toolbar>
       <SimulatorShell>
         <webview
           id='simulatorWebview'
           className='webview'
-          style={{ pointerEvents: props.moving ? 'none' : 'auto' }}
-          useragent='Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1'
+          style={{
+            pointerEvents: props.moving ? 'none' : 'auto',
+            width: device.screen.vertical.width,
+            height: device.screen.vertical.height,
+          }}
+          useragent={device['user-agent']}
           src={src}
         ></webview>
       </SimulatorShell>

@@ -1,7 +1,3 @@
-export interface IElectronAPI {
-  send: (channel: string, ...args: any[]) => void
-}
-
 declare global {
   interface Window {
     electronAPI: IElectronAPI
@@ -14,4 +10,8 @@ declare global {
   }
 }
 
-export type First<T extends any[]> = T extends [infer F, ...infer _] ? F : never
+export interface IElectronAPI {
+  send: (channel: string, ...args: any[]) => void
+}
+
+export type First<T extends any[]> = T extends readonly (infer ElementType)[] ? ElementType : never

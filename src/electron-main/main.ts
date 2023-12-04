@@ -27,7 +27,7 @@ async function createWindow(): Promise<void> {
     win.webContents.openDevTools({ mode: 'detach' })
   }
 
-  win.webContents.ipc.on('set-devtools', (event, { simulatorContentId, devtoolsContentId }) => {
+  win.webContents.ipc.on('set-devtools', (event, { simulatorContentId, devtoolsContentId, device }) => {
     const simulatorContents = webContents.fromId(simulatorContentId) as WebContents
     const devtoolsContents = webContents.fromId(devtoolsContentId) as WebContents
 
@@ -38,9 +38,9 @@ async function createWindow(): Promise<void> {
       if (!simulatorContents.debugger.isAttached()) {
         simulatorContents.debugger.attach('1.3')
         simulatorContents.debugger.sendCommand('Emulation.setDeviceMetricsOverride', {
-          width: 300, // 你可以设置手机视图的宽度
-          height: 667, // 你可以设置手机视图的高度
-          deviceScaleFactor: 2, // 缩放因子
+          width: device.screen.vertical.width,
+          height: device.screen.vertical.height,
+          deviceScaleFactor: device.screen['device-pixel-ratio'], // 缩放因子
           mobile: true,
         })
       }

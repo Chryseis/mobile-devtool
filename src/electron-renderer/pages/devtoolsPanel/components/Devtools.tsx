@@ -4,6 +4,7 @@ import styled from 'styled-components'
 const DevtoolsWrapper = styled.div`
   flex: 1;
   display: flex;
+  background-color: ${(props) => props.theme.colorBgContent};
 
   .webview {
     flex: 1;

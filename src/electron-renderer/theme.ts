@@ -5,8 +5,10 @@ const theme: DefaultTheme = {
   colorBgBase: '#424242',
   colorBgContent: '#2e2e2e',
   colorBgToolbar: '#383838',
+  colorText: 'rgba(255,255,255,0.5)',
   borderRadius: 6,
   fontSize: 14,
+  contentFontSize: 12,
   component: {
     colorBgContainer: '#4b4b4b',
     colorBorder: 'rgba(255,255,255,.3)',
