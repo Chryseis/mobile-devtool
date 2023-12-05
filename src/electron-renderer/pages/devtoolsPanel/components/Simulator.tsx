@@ -1,9 +1,9 @@
-import type { Dispatch, RefObject, SetStateAction } from 'react'
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import type { Dispatch, ReactElement, RefObject, SetStateAction } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import styled from 'styled-components'
-import { CascaderProps, Popover, Cascader } from 'antd'
-import { CaretDownOutlined } from '@ant-design/icons'
+import { Popover } from 'antd'
+import { CaretDownOutlined, RightOutlined } from '@ant-design/icons'
 import { calcWidth } from '@/shared/utils'
 import type { RootState } from '@/store'
 import type { Device } from '@/pages/devtoolsPanel'
@@ -23,7 +23,6 @@ const SimulatorWrapper = styled.div<{ ref: RefObject<HTMLDivElement>; style: Rea
     position: absolute;
     top: 50px;
     left: 50%;
-    transform: translate(-50%, 0);
   }
 `
 
@@ -61,11 +60,61 @@ const SplitLine = styled.div`
   cursor: col-resize;
 `
 
-const DevicePanel = styled(Cascader.Panel)`
+const DevicePanel = styled.div`
   border: none;
+  border-radius: 7px;
   max-height: 300px;
   overflow-y: auto;
+
+  .item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 8px 12px;
+    font-size: ${(props) => `${props.theme.contentFontSize}px`};
+    cursor: default;
+
+    &:hover {
+      background-color: ${(props) => props.theme.colorBgPopupHover};
+    }
+
+    &:active,
+    &:focus {
+      background-color: ${(props) => props.theme.colorBgPopupActive};
+    }
+
+    &.selected {
+      background-color: ${(props) => props.theme.colorBgPopupActive};
+    }
+  }
 `
+
+const DevicePopover: React.FC<{
+  children: ReactElement
+  content: ReactElement
+  trigger: 'click' | 'hover' | Array<'click' | 'hover'>
+  placement: 'top' | 'left' | 'bottomLeft' | 'rightTop'
+  align?: object
+}> = (props) => {
+  const [open, setOpen] = useState<boolean>(false)
+
+  return (
+    <Popover
+      overlayInnerStyle={{ padding: 0 }}
+      trigger={props.trigger}
+      placement={props.placement}
+      arrow={false}
+      autoAdjustOverflow={false}
+      open={open}
+      align={props.align}
+      onOpenChange={(open) => setOpen(open)}
+      content={React.cloneElement(props.content, { onClick: () => setOpen(false) })}
+    >
+      {props.children}
+    </Popover>
+  )
+}
 
 const Simulator: React.FC<{
   minWidth: number | string
@@ -77,13 +126,12 @@ const Simulator: React.FC<{
 }> = (props) => {
   const simulatorRef = useRef<HTMLDivElement>(null)
   const [simulatorWidth, setSimulatorWidth] = useState<number | string>(DEFAULT_WIDTH)
-  const [open, setOpen] = useState<boolean>(false)
   const src = useSelector((state: RootState) => state.devtools.src)
   const device = useSelector((state: RootState) => state.devtools.device)
   const scale = useSelector((state: RootState) => state.devtools.scale)
   const dispatch = useDispatch()
 
-  const cascaderData = useMemo<CascaderProps['options']>(() => {
+  const cascaderData = useMemo(() => {
     return [
       {
         label: '机型',
@@ -91,15 +139,16 @@ const Simulator: React.FC<{
         children: props.devices.map((o) => ({
           label: `${o.title}（${o.screen.vertical.width}x${o.screen.vertical.height}｜Dpr:${o.screen['device-pixel-ratio']}）`,
           value: o.title,
+          selected: device.title === o.title,
         })),
       },
       {
         label: '显示比例',
         value: 'scale',
-        children: props.scaleList.map((o) => ({ label: `${o * 100}%`, value: o })),
+        children: props.scaleList.map((o) => ({ label: `${o * 100}%`, value: o, selected: o === scale })),
       },
-    ] as CascaderProps['options']
-  }, [props.devices, props.scaleList])
+    ]
+  }, [props.devices, props.scaleList, device, scale])
 
   useEffect(() => {
     if (simulatorRef.current) {
@@ -140,34 +189,64 @@ const Simulator: React.FC<{
     document?.addEventListener('mouseup', mouseupHandle)
   }
 
-  const onChangeDevice = (value: Array<string | number>) => {
-    const [menu1, menu2] = value
+  const onChangeDevice = useCallback(
+    (value: Array<string | number>) => {
+      const [firstLayer, secondLayer] = value
 
-    if (menu1 === 'device') {
-      const device = props.devices.find((o) => o.title === menu2) as Device
-      dispatch(changeDevice(device))
-    } else {
-      dispatch(changeScale(menu2 as number))
-    }
+      if (firstLayer === 'device') {
+        const device = props.devices.find((o) => o.title === secondLayer) as Device
+        dispatch(changeDevice(device))
+      } else {
+        dispatch(changeScale(secondLayer as number))
+      }
 
-    setOpen(false)
-  }
+      const simulatorWebview = document.querySelector('#simulatorWebview') as ElectronWebViewElement
+      const simulatorContentId = simulatorWebview?.getWebContentsId()
+
+      window.electronAPI.setDeviceMetrics(simulatorContentId, {
+        width: device.screen.vertical.width,
+        height: device.screen.vertical.height,
+        dpr: device.screen['device-pixel-ratio'],
+      })
+    },
+    [device, props.devices, dispatch]
+  )
 
   return (
     <SimulatorWrapper ref={simulatorRef} style={{ width: simulatorWidth }}>
       <Toolbar>
-        <Popover
-          overlayInnerStyle={{ padding: 0 }}
+        <DevicePopover
           trigger='click'
-          arrow={false}
-          open={open}
-          onOpenChange={(open) => setOpen(open)}
+          placement='bottomLeft'
           content={
-            <DevicePanel
-              options={cascaderData}
-              expandTrigger='hover'
-              onChange={(value: any) => onChangeDevice(value)}
-            />
+            <DevicePanel>
+              {cascaderData?.map((o) => (
+                <DevicePopover
+                  placement='rightTop'
+                  trigger='hover'
+                  key={o.value}
+                  align={{ offset: [-5, 0] }}
+                  content={
+                    <DevicePanel>
+                      {o.children.map((child: { label: string; value: string | number; selected: boolean }) => (
+                        <div
+                          className={`item ${child.selected ? 'selected' : ''}`}
+                          key={child.value}
+                          onClick={() => onChangeDevice([o.value, child.value])}
+                        >
+                          {child.label}
+                        </div>
+                      ))}
+                    </DevicePanel>
+                  }
+                >
+                  <div className='item'>
+                    {o.label}
+                    <RightOutlined style={{ fontSize: 10 }} />
+                  </div>
+                </DevicePopover>
+              ))}
+            </DevicePanel>
           }
         >
           <div className='toolbar-item'>
@@ -175,7 +254,7 @@ const Simulator: React.FC<{
             <span>{`${scale * 100}%`}</span>
             <CaretDownOutlined />
           </div>
-        </Popover>
+        </DevicePopover>
       </Toolbar>
       <SimulatorShell>
         <webview
@@ -185,9 +264,11 @@ const Simulator: React.FC<{
             pointerEvents: props.moving ? 'none' : 'auto',
             width: device.screen.vertical.width,
             height: device.screen.vertical.height,
+            transform: `translate(-50%, 0) scale(${scale})`,
           }}
           useragent={device['user-agent']}
           src={src}
+          preload={window.electronAPI.simulatorPreload}
         ></webview>
       </SimulatorShell>
       <SplitLine onMouseDown={onMouseDown} />

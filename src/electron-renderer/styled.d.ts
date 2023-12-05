@@ -8,6 +8,8 @@ declare module 'styled-components' {
     colorBgBase: string
     colorBgContent: string
     colorText: string
+    colorBgPopupHover: string
+    colorBgPopupActive: string
     borderRadius: number
     fontSize: number
   }

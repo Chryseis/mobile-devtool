@@ -6,6 +6,8 @@ const theme: DefaultTheme = {
   colorBgContent: '#2e2e2e',
   colorBgToolbar: '#383838',
   colorText: 'rgba(255,255,255,0.5)',
+  colorBgPopupHover: 'rgba(82,192,26,0.1)',
+  colorBgPopupActive: 'rgba(82,192,26,0.3)',
   borderRadius: 6,
   fontSize: 14,
   contentFontSize: 12,

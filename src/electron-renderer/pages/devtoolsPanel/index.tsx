@@ -50,7 +50,7 @@ function DevtoolsPanel(): React.JSX.Element {
         console.warn('webview contentId 获取失败')
       }
     })
-  }, [])
+  }, [device])
 
   return (
     <PanelWrapper>

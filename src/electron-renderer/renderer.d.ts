@@ -12,6 +12,8 @@ declare global {
 
 export interface IElectronAPI {
   send: (channel: string, ...args: any[]) => void
+  setDeviceMetrics: (simulatorContentId: number, metrics: { width?: number; height?: number; dpr?: number }) => void
+  simulatorPreload: string
 }
 
 export type First<T extends any[]> = T extends readonly (infer ElementType)[] ? ElementType : never

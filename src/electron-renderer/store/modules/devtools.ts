@@ -8,7 +8,7 @@ const initialState: Record<string, any> = {
   url: 'capsule-mobile.91jkys.com/mobile.html#/zh-CN/',
   src: 'https://capsule-mobile.91jkys.com/mobile.html#/zh-CN/',
   device: emulatedDevices.find((o) => o.title === 'iPhone 6/7/8') as Device,
-  scale: 0.75,
+  scale: 0.85,
 }
 
 export const devtoolsSlice = createSlice({

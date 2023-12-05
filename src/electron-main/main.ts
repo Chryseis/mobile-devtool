@@ -1,7 +1,7 @@
 import path from 'path'
-import { app, BrowserWindow, webContents, nativeTheme } from 'electron'
-import type { WebContents } from 'electron'
+import { app, BrowserWindow, nativeTheme } from 'electron'
 import isDev from 'electron-is-dev'
+import { ipcSetDevtools, ipcSetDeviceMetrics } from './ipcHandler'
 
 async function createWindow(): Promise<void> {
   nativeTheme.themeSource = 'dark'
@@ -27,25 +27,9 @@ async function createWindow(): Promise<void> {
     win.webContents.openDevTools({ mode: 'detach' })
   }
 
-  win.webContents.ipc.on('set-devtools', (event, { simulatorContentId, devtoolsContentId, device }) => {
-    const simulatorContents = webContents.fromId(simulatorContentId) as WebContents
-    const devtoolsContents = webContents.fromId(devtoolsContentId) as WebContents
+  ipcSetDevtools(win)
 
-    if (devtoolsContents) {
-      simulatorContents.setDevToolsWebContents(devtoolsContents)
-      simulatorContents.openDevTools({ mode: 'detach' })
-
-      if (!simulatorContents.debugger.isAttached()) {
-        simulatorContents.debugger.attach('1.3')
-        simulatorContents.debugger.sendCommand('Emulation.setDeviceMetricsOverride', {
-          width: device.screen.vertical.width,
-          height: device.screen.vertical.height,
-          deviceScaleFactor: device.screen['device-pixel-ratio'], // 缩放因子
-          mobile: true,
-        })
-      }
-    }
-  })
+  ipcSetDeviceMetrics(win)
 
   win.webContents.ipc.on('set-device-metrics', (e, metrics) => {})
 }
