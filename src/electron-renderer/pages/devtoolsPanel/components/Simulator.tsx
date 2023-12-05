@@ -18,12 +18,6 @@ const SimulatorWrapper = styled.div<{ ref: RefObject<HTMLDivElement>; style: Rea
   flex-direction: column;
   width: 30vw;
   background-color: ${(props) => props.theme.colorBgContent};
-
-  .webview {
-    position: absolute;
-    top: 50px;
-    left: 50%;
-  }
 `
 
 const Toolbar = styled.div`
@@ -48,6 +42,20 @@ const SimulatorShell = styled.div`
   flex: 1;
   position: relative;
   overflow: auto;
+
+  .simulator {
+    position: absolute;
+    top: 30px;
+    left: 50%;
+    display: flex;
+    flex-direction: column;
+    transition: 0.3s all;
+    transform-origin: 50% 0;
+
+    .webview {
+      flex: 1;
+    }
+  }
 `
 
 const SplitLine = styled.div`
@@ -190,26 +198,26 @@ const Simulator: React.FC<{
   }
 
   const onChangeDevice = useCallback(
-    (value: Array<string | number>) => {
+    async (value: Array<string | number>) => {
       const [firstLayer, secondLayer] = value
 
       if (firstLayer === 'device') {
         const device = props.devices.find((o) => o.title === secondLayer) as Device
         dispatch(changeDevice(device))
+        const simulatorWebview = document.querySelector('#simulatorWebview') as ElectronWebViewElement
+        const simulatorContentId = simulatorWebview?.getWebContentsId()
+
+        await window.electronAPI.setDeviceMetrics(simulatorContentId, {
+          width: device.screen.vertical.width,
+          height: device.screen.vertical.height,
+          dpr: device.screen['device-pixel-ratio'],
+        })
+        simulatorWebview.reload()
       } else {
         dispatch(changeScale(secondLayer as number))
       }
-
-      const simulatorWebview = document.querySelector('#simulatorWebview') as ElectronWebViewElement
-      const simulatorContentId = simulatorWebview?.getWebContentsId()
-
-      window.electronAPI.setDeviceMetrics(simulatorContentId, {
-        width: device.screen.vertical.width,
-        height: device.screen.vertical.height,
-        dpr: device.screen['device-pixel-ratio'],
-      })
     },
-    [device, props.devices, dispatch]
+    [props.devices, dispatch]
   )
 
   return (
@@ -257,19 +265,27 @@ const Simulator: React.FC<{
         </DevicePopover>
       </Toolbar>
       <SimulatorShell>
-        <webview
-          id='simulatorWebview'
-          className='webview'
+        <div
+          className='simulator'
           style={{
-            pointerEvents: props.moving ? 'none' : 'auto',
             width: device.screen.vertical.width,
             height: device.screen.vertical.height,
             transform: `translate(-50%, 0) scale(${scale})`,
           }}
-          useragent={device['user-agent']}
-          src={src}
-          preload={window.electronAPI.simulatorPreload}
-        ></webview>
+        >
+          <webview
+            id='simulatorWebview'
+            className='webview'
+            style={{
+              pointerEvents: props.moving ? 'none' : 'auto',
+              width: device.screen.vertical.width,
+              height: device.screen.vertical.height,
+            }}
+            useragent={device['user-agent']}
+            src={src}
+            preload={window.electronAPI.simulatorPreload}
+          ></webview>
+        </div>
       </SimulatorShell>
       <SplitLine onMouseDown={onMouseDown} />
     </SimulatorWrapper>

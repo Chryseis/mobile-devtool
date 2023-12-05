@@ -30,8 +30,6 @@ async function createWindow(): Promise<void> {
   ipcSetDevtools(win)
 
   ipcSetDeviceMetrics(win)
-
-  win.webContents.ipc.on('set-device-metrics', (e, metrics) => {})
 }
 
 // This method will be called when Electron has finished
