@@ -7,6 +7,7 @@ declare global {
     openDevTools: () => void
     reload: () => void
     getWebContentsId: () => number
+    setUserAgent: (userAgent) => void
   }
 }
 

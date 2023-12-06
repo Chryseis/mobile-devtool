@@ -167,15 +167,15 @@ const Simulator: React.FC<{
   }, [])
 
   const onMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    props.setMoving(true)
+
     const simulatorWidth = simulatorRef.current?.clientWidth
 
     const minOffset = calcWidth(props.minWidth, window.screen.width)
     const maxOffset = calcWidth(props.maxWidth, window.screen.width)
 
     const mousemoveHandle = (event: MouseEvent) => {
-      props.setMoving(true)
       const x = event.clientX
-
       if (simulatorWidth) {
         if (x < minOffset) {
           setSimulatorWidth(minOffset)
@@ -212,6 +212,7 @@ const Simulator: React.FC<{
           height: device.screen.vertical.height,
           dpr: device.screen['device-pixel-ratio'],
         })
+        simulatorWebview.setUserAgent(device['user-agent'])
         simulatorWebview.reload()
       } else {
         dispatch(changeScale(secondLayer as number))
@@ -284,6 +285,7 @@ const Simulator: React.FC<{
             useragent={device['user-agent']}
             src={src}
             preload={window.electronAPI.simulatorPreload}
+            webpreferences='scrollBounce: true'
           ></webview>
         </div>
       </SimulatorShell>
