@@ -24,6 +24,10 @@ function App(): React.JSX.Element {
               ...theme.component,
               ...theme.select,
             },
+            Button: {
+              ...theme.component,
+              ...theme.button,
+            },
           },
         }}
       >

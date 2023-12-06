@@ -35,6 +35,11 @@ const theme: DefaultTheme = {
   icon: {
     colorPrimary: '#fff',
   },
+  button: {
+    colorPrimary: '#7b7b7b',
+    colorPrimaryHover: '#737373',
+    colorPrimaryActive: '#737373',
+  },
 }
 
 export default theme

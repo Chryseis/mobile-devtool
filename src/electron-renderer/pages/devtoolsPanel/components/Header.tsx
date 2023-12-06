@@ -2,9 +2,9 @@ import React, { useRef } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import styled, { useTheme } from 'styled-components'
 import type { IStyledComponent } from 'styled-components'
-import { Avatar, Input, Select } from 'antd'
+import { Avatar, Input, Select, Button } from 'antd'
 import type { InputRef } from 'antd'
-import { ReloadOutlined } from '@ant-design/icons'
+import { ReloadOutlined, EyeOutlined, EllipsisOutlined } from '@ant-design/icons'
 import avatar from '@/assets/images/avatar.jpeg'
 import type { RootState } from '@/store'
 import { changeProtocol, changeURL, confirmSrc } from '@/store/modules/devtools'
@@ -13,10 +13,17 @@ const FunctionBar = styled.div`
   flex: 1;
   display: flex;
   align-items: center;
+  justify-content: space-between;
 
   .search {
     width: 60%;
     height: 30px;
+  }
+
+  .action-bar {
+    display: flex;
+    align-items: center;
+    gap: 15px;
   }
 `
 
@@ -56,7 +63,9 @@ const Header: React.FC<{ reloadSimulator: () => void }> = (props) => {
               <Select.Option value='https://'>https://</Select.Option>
             </Select>
           }
-          addonAfter={<ReloadOutlined style={{ color: theme.icon.colorPrimary }} onClick={props.reloadSimulator} />}
+          addonAfter={
+            <ReloadOutlined style={{ color: theme.icon.colorPrimary }} spin={false} onClick={props.reloadSimulator} />
+          }
           className='search'
           allowClear
           value={url}
@@ -66,6 +75,10 @@ const Header: React.FC<{ reloadSimulator: () => void }> = (props) => {
             dispatch(confirmSrc())
           }}
         />
+        <div className='action-bar'>
+          <Button type='primary' icon={<EyeOutlined />} />
+          <Button type='primary' icon={<EllipsisOutlined />} />
+        </div>
       </FunctionBar>
     </HeaderWrapper>
   )

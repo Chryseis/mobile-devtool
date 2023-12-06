@@ -45,7 +45,7 @@ const SimulatorShell = styled.div`
 
   .simulator {
     position: absolute;
-    top: 30px;
+    top: 50px;
     left: 50%;
     display: flex;
     flex-direction: column;
