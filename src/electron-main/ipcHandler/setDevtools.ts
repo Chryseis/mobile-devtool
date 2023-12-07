@@ -1,7 +1,7 @@
-import { webContents } from 'electron'
+import { BrowserView, webContents } from 'electron'
 import type { BrowserWindow, WebContents } from 'electron'
 
-export function ipcSetDevtools(win: BrowserWindow) {
+export function ipcSetDevtools(win: BrowserWindow | BrowserView) {
   win.webContents.ipc.on('set-devtools', async (event, { simulatorContentId, devtoolsContentId, device }) => {
     const simulatorContents = webContents.fromId(simulatorContentId) as WebContents
     const devtoolsContents = webContents.fromId(devtoolsContentId) as WebContents
@@ -24,10 +24,10 @@ export function ipcSetDevtools(win: BrowserWindow) {
         //   maxTouchPoints: 1,
         // })
         //
-        // await simulatorContents.debugger.sendCommand('Emulation.setEmitTouchEventsForMouse', {
-        //   enabled: true,
-        //   configuration: 'mobile',
-        // })
+        await simulatorContents.debugger.sendCommand('Emulation.setEmitTouchEventsForMouse', {
+          enabled: true,
+          configuration: 'mobile',
+        })
       }
     }
   })

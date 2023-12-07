@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import styled from 'styled-components'
 import { Popover } from 'antd'
 import { CaretDownOutlined, RightOutlined } from '@ant-design/icons'
-import { calcWidth } from '@/shared/utils'
+import { calcWidth, emittedOnce } from '@/shared/utils'
 import type { RootState } from '@/store'
 import type { Device } from '@/pages/devtoolsPanel'
 import { ellipsis } from '@/shared/css'
@@ -158,13 +158,19 @@ const Simulator: React.FC<{
     ]
   }, [props.devices, props.scaleList, device, scale])
 
-  useEffect(() => {
-    if (simulatorRef.current) {
-      setSimulatorWidth(simulatorRef.current.clientWidth)
-    }
+  const initSimulator = useCallback(async () => {
+    const devtoolsWebview = document.querySelector('#devtoolsWebview') as ElectronWebViewElement
 
-    return () => {}
-  }, [])
+    await emittedOnce(devtoolsWebview, 'dom-ready')
+
+    const simulatorWebview = document.querySelector('#simulatorWebview') as HTMLElement
+
+    const { x, y, width, height } = simulatorWebview.getBoundingClientRect()
+
+    const devtoolsContentId = devtoolsWebview?.getWebContentsId()
+
+    window.electronAPI.send('set-devtools', { rect: { x, y, width, height }, src, device, devtoolsContentId })
+  }, [device, src])
 
   const onMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
     props.setMoving(true)
@@ -221,6 +227,12 @@ const Simulator: React.FC<{
     [props.devices, dispatch]
   )
 
+  useEffect(() => {
+    initSimulator().then(() => {})
+
+    return () => {}
+  }, [initSimulator])
+
   return (
     <SimulatorWrapper ref={simulatorRef} style={{ width: simulatorWidth }}>
       <Toolbar>
@@ -274,19 +286,7 @@ const Simulator: React.FC<{
             transform: `translate(-50%, 0) scale(${scale})`,
           }}
         >
-          <webview
-            id='simulatorWebview'
-            className='webview'
-            style={{
-              pointerEvents: props.moving ? 'none' : 'auto',
-              width: device.screen.vertical.width,
-              height: device.screen.vertical.height,
-            }}
-            useragent={device['user-agent']}
-            src={src}
-            preload={window.electronAPI.simulatorPreload}
-            webpreferences='scrollBounce: true'
-          ></webview>
+          <div id='simulatorWebview' className='webview'></div>
         </div>
       </SimulatorShell>
       <SplitLine onMouseDown={onMouseDown} />

@@ -1,7 +1,7 @@
 import path from 'path'
 import { app, BrowserWindow, nativeTheme } from 'electron'
 import isDev from 'electron-is-dev'
-import { ipcSetDevtools, ipcSetDeviceMetrics } from './ipcHandler'
+import { createDevtoolsPanel } from './views/devtoolsPanel'
 
 async function createWindow(): Promise<void> {
   nativeTheme.themeSource = 'dark'
@@ -10,26 +10,9 @@ async function createWindow(): Promise<void> {
   const win = new BrowserWindow({
     width: 1200,
     height: 800,
-    webPreferences: {
-      nodeIntegration: true,
-      preload: path.join(__dirname, 'preload.js'),
-      webviewTag: true,
-    },
   })
 
-  // and load the index.html of the app.
-  // win.loadFile("index.html");
-  await win.loadURL(
-    isDev ? 'http://localhost:3000/#devtoolsPanel' : `file://${path.join(__dirname, '../build/index.html')}`
-  )
-  // Open the DevTools.
-  if (isDev) {
-    win.webContents.openDevTools({ mode: 'detach' })
-  }
-
-  ipcSetDevtools(win)
-
-  ipcSetDeviceMetrics(win)
+  await createDevtoolsPanel(win)
 }
 
 // This method will be called when Electron has finished

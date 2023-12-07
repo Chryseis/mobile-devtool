@@ -1,7 +1,7 @@
-import { webContents } from 'electron'
+import { BrowserView, webContents } from 'electron'
 import type { BrowserWindow, WebContents } from 'electron'
 
-export function ipcSetDeviceMetrics(win: BrowserWindow) {
+export function ipcSetDeviceMetrics(win: BrowserWindow | BrowserView) {
   win.webContents.ipc.handle(
     'set-device-metrics',
     async (

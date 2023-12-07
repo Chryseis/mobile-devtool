@@ -35,22 +35,22 @@ function DevtoolsPanel(): React.JSX.Element {
     simulatorWebview.reload()
   }
 
-  useEffect(() => {
-    const simulatorWebview = document.querySelector('#simulatorWebview') as ElectronWebViewElement
-    const devtoolsWebview = document.querySelector('#devtoolsWebview') as ElectronWebViewElement
-
-    Promise.all([emittedOnce(simulatorWebview, 'dom-ready'), emittedOnce(devtoolsWebview, 'dom-ready')]).then(() => {
-      const simulatorContentId = simulatorWebview?.getWebContentsId()
-
-      const devtoolsContentId = devtoolsWebview?.getWebContentsId()
-
-      if (simulatorContentId && devtoolsContentId) {
-        window.electronAPI.send('set-devtools', { simulatorContentId, devtoolsContentId, device })
-      } else {
-        console.warn('webview contentId 获取失败')
-      }
-    })
-  }, [device])
+  // useEffect(() => {
+  //   const simulatorWebview = document.querySelector('#simulatorWebview') as ElectronWebViewElement
+  //   const devtoolsWebview = document.querySelector('#devtoolsWebview') as ElectronWebViewElement
+  //
+  //   Promise.all([emittedOnce(simulatorWebview, 'dom-ready'), emittedOnce(devtoolsWebview, 'dom-ready')]).then(() => {
+  //     const simulatorContentId = simulatorWebview?.getWebContentsId()
+  //
+  //     const devtoolsContentId = devtoolsWebview?.getWebContentsId()
+  //
+  //     if (simulatorContentId && devtoolsContentId) {
+  //       window.electronAPI.send('set-devtools', { simulatorContentId, devtoolsContentId, device })
+  //     } else {
+  //       console.warn('webview contentId 获取失败')
+  //     }
+  //   })
+  // }, [device])
 
   return (
     <PanelWrapper>
