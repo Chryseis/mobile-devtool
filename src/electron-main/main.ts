@@ -1,10 +1,12 @@
 import path from 'path'
-import { app, BrowserWindow, nativeTheme } from 'electron'
+import { app, BrowserWindow, nativeTheme, WebContents } from 'electron'
 import isDev from 'electron-is-dev'
-import { ipcSetDevtools, ipcSetDeviceMetrics } from './ipcHandler'
+import { ipcSetDevtools, ipcSetDeviceMetrics, ipcSetTouchEventsForMouse } from './ipcHandler'
 
 async function createWindow(): Promise<void> {
   nativeTheme.themeSource = 'dark'
+
+  const webContentsMap = new Map<string, WebContents>()
 
   // Create the browser window.
   const win = new BrowserWindow({
@@ -27,9 +29,11 @@ async function createWindow(): Promise<void> {
     win.webContents.openDevTools({ mode: 'detach' })
   }
 
-  ipcSetDevtools(win)
+  ipcSetDevtools(win, webContentsMap)
 
   ipcSetDeviceMetrics(win)
+
+  ipcSetTouchEventsForMouse(win, webContentsMap)
 }
 
 // This method will be called when Electron has finished

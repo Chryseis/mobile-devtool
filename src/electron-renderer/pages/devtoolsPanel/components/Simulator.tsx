@@ -161,6 +161,27 @@ const Simulator: React.FC<{
   useEffect(() => {
     if (simulatorRef.current) {
       setSimulatorWidth(simulatorRef.current.clientWidth)
+      const webview = document.querySelector('#simulatorWebview') as HTMLElement
+
+      webview.addEventListener('mouseenter', () => {
+        window.electronAPI.send('set-touch-events-for-mouse', { enabled: true })
+      })
+
+      webview.addEventListener('mouseleave', () => {
+        console.log('webview mouseleave')
+      })
+
+      document.addEventListener('mousemove', () => {
+        console.log('document mousemove')
+      })
+
+      document.addEventListener('touchmove', () => {
+        console.log('document touchmove')
+      })
+
+      webview.addEventListener('touchmove', () => {
+        console.log('webview touchmove')
+      })
     }
 
     return () => {}
@@ -285,7 +306,7 @@ const Simulator: React.FC<{
             useragent={device['user-agent']}
             src={src}
             preload={window.electronAPI.simulatorPreload}
-            webpreferences='scrollBounce: true'
+            webpreferences='scrollBounce=true'
           ></webview>
         </div>
       </SimulatorShell>
