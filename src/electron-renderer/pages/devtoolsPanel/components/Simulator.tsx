@@ -159,30 +159,27 @@ const Simulator: React.FC<{
   }, [props.devices, props.scaleList, device, scale])
 
   useEffect(() => {
-    if (simulatorRef.current) {
-      setSimulatorWidth(simulatorRef.current.clientWidth)
-      const webview = document.querySelector('#simulatorWebview') as HTMLElement
+    const webview = document.querySelector('#simulatorWebview') as HTMLElement
 
-      webview.addEventListener('mouseenter', () => {
-        window.electronAPI.send('set-touch-events-for-mouse', { enabled: true })
-      })
+    webview.addEventListener('mouseenter', () => {
+      // window.electronAPI.send('set-touch-events-for-mouse', { enabled: true })
+    })
 
-      webview.addEventListener('mouseleave', () => {
-        console.log('webview mouseleave')
-      })
+    webview.addEventListener('mouseleave', () => {
+      console.log('webview mouseleave')
+    })
 
-      document.addEventListener('mousemove', () => {
-        console.log('document mousemove')
-      })
+    document.addEventListener('mousemove', () => {
+      console.log('document mousemove')
+    })
 
-      document.addEventListener('touchmove', () => {
-        console.log('document touchmove')
-      })
+    document.addEventListener('touchmove', () => {
+      console.log('document touchmove')
+    })
 
-      webview.addEventListener('touchmove', () => {
-        console.log('webview touchmove')
-      })
-    }
+    webview.addEventListener('touchmove', () => {
+      console.log('webview touchmove')
+    })
 
     return () => {}
   }, [])
