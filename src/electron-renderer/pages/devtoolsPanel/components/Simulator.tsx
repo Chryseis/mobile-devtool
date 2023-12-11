@@ -125,7 +125,6 @@ const DevicePopover: React.FC<{
 }
 
 const Simulator: React.FC<{
-  minWidth: number | string
   maxWidth: number | string
   moving: boolean
   setMoving: Dispatch<SetStateAction<boolean>>
@@ -162,7 +161,7 @@ const Simulator: React.FC<{
     const webview = document.querySelector('#simulatorWebview') as HTMLElement
 
     webview.addEventListener('mouseenter', () => {
-      // window.electronAPI.send('set-touch-events-for-mouse', { enabled: true })
+      console.log('webview mouseenter')
     })
 
     webview.addEventListener('mouseleave', () => {
@@ -184,36 +183,39 @@ const Simulator: React.FC<{
     return () => {}
   }, [])
 
-  const onMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
-    props.setMoving(true)
+  const onMouseDown = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      props.setMoving(true)
 
-    const simulatorWidth = simulatorRef.current?.clientWidth
+      const simulatorWidth = simulatorRef.current?.clientWidth
 
-    const minOffset = calcWidth(props.minWidth, window.screen.width)
-    const maxOffset = calcWidth(props.maxWidth, window.screen.width)
+      const minOffset = calcWidth(device.screen.vertical.width, window.screen.width)
+      const maxOffset = calcWidth(props.maxWidth, window.screen.width)
 
-    const mousemoveHandle = (event: MouseEvent) => {
-      const x = event.clientX
-      if (simulatorWidth) {
-        if (x < minOffset) {
-          setSimulatorWidth(minOffset)
-        } else if (x > maxOffset) {
-          setSimulatorWidth(maxOffset)
-        } else {
-          setSimulatorWidth(x)
+      const mousemoveHandle = (event: MouseEvent) => {
+        const x = event.clientX
+        if (simulatorWidth) {
+          if (x < minOffset) {
+            setSimulatorWidth(minOffset)
+          } else if (x > maxOffset) {
+            setSimulatorWidth(maxOffset)
+          } else {
+            setSimulatorWidth(x)
+          }
         }
       }
-    }
 
-    const mouseupHandle = () => {
-      props.setMoving(false)
-      document?.removeEventListener('mousemove', mousemoveHandle)
-      document?.removeEventListener('mouseup', mouseupHandle)
-    }
+      const mouseupHandle = () => {
+        props.setMoving(false)
+        document?.removeEventListener('mousemove', mousemoveHandle)
+        document?.removeEventListener('mouseup', mouseupHandle)
+      }
 
-    document?.addEventListener('mousemove', mousemoveHandle)
-    document?.addEventListener('mouseup', mouseupHandle)
-  }
+      document?.addEventListener('mousemove', mousemoveHandle)
+      document?.addEventListener('mouseup', mouseupHandle)
+    },
+    [props, device]
+  )
 
   const onChangeDevice = useCallback(
     async (value: Array<string | number>) => {
