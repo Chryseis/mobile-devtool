@@ -2,13 +2,14 @@ import type { Dispatch, ReactElement, RefObject, SetStateAction } from 'react'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import styled from 'styled-components'
-import { Popover } from 'antd'
-import { CaretDownOutlined, RightOutlined } from '@ant-design/icons'
+import { Popover, Tooltip } from 'antd'
+import { CaretDownOutlined, RightOutlined, MobileOutlined } from '@ant-design/icons'
 import { calcWidth } from '@/shared/utils'
 import type { RootState } from '@/store'
 import type { Device } from '@/pages/devtoolsPanel'
 import { ellipsis } from '@/shared/css'
 import { changeScale, changeDevice } from '@/store/modules/devtools'
+import theme from '@/theme'
 
 const DEFAULT_WIDTH = '50vw'
 
@@ -125,12 +126,14 @@ const DevicePopover: React.FC<{
 }
 
 const Simulator: React.FC<{
+  minWidth: number | string
   maxWidth: number | string
   moving: boolean
   setMoving: Dispatch<SetStateAction<boolean>>
   devices: Array<Device>
   scaleList: Array<number>
 }> = (props) => {
+  const [isTouch, setIsTouch] = useState<boolean>(false)
   const simulatorRef = useRef<HTMLDivElement>(null)
   const [simulatorWidth, setSimulatorWidth] = useState<number | string>(DEFAULT_WIDTH)
   const src = useSelector((state: RootState) => state.devtools.src)
@@ -189,7 +192,7 @@ const Simulator: React.FC<{
 
       const simulatorWidth = simulatorRef.current?.clientWidth
 
-      const minOffset = calcWidth(device.screen.vertical.width, window.screen.width)
+      const minOffset = calcWidth(props.minWidth, window.screen.width)
       const maxOffset = calcWidth(props.maxWidth, window.screen.width)
 
       const mousemoveHandle = (event: MouseEvent) => {
@@ -214,7 +217,7 @@ const Simulator: React.FC<{
       document?.addEventListener('mousemove', mousemoveHandle)
       document?.addEventListener('mouseup', mouseupHandle)
     },
-    [props, device]
+    [props]
   )
 
   const onChangeDevice = useCallback(
@@ -284,6 +287,19 @@ const Simulator: React.FC<{
             <CaretDownOutlined />
           </div>
         </DevicePopover>
+        <Tooltip title='切换触摸模式' color={theme.colorBgBase}>
+          <MobileOutlined
+            style={{
+              color: theme.input.colorTextQuaternary,
+              fontSize: theme.contentFontSize + 'px',
+              cursor: 'pointer',
+            }}
+            onClick={() => {
+              setIsTouch(!isTouch)
+              window.electronAPI.send('set-touch-events-for-mouse', { enabled: !isTouch })
+            }}
+          />
+        </Tooltip>
       </Toolbar>
       <SimulatorShell>
         <div

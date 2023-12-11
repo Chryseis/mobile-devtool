@@ -17,6 +17,7 @@
     "device-specs": "^1.0.1",
     "electron": "^28.0.0",
     "electron-is-dev": "^2.0.0",
+    "electron-store": "^8.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-redux": "^8.1.3",

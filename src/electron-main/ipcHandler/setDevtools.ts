@@ -10,7 +10,7 @@ export function ipcSetDevtools(win: BrowserWindow, webContentsMap: Map<string, W
       webContentsMap.set('simulatorContents', simulatorContents)
       webContentsMap.set('devtoolsContents', devtoolsContents)
       simulatorContents.setDevToolsWebContents(devtoolsContents)
-      simulatorContents.openDevTools()
+      simulatorContents.openDevTools({ mode: 'detach' })
 
       simulatorContents.enableDeviceEmulation({
         screenPosition: 'mobile',
@@ -20,15 +20,6 @@ export function ipcSetDevtools(win: BrowserWindow, webContentsMap: Map<string, W
         viewSize: { width: device.screen.vertical.width, height: device.screen.vertical.height },
         scale: 1,
       })
-
-      // if (!simulatorContents.debugger.isAttached()) {
-      //   simulatorContents.debugger.attach('1.3')
-      //
-      //   await simulatorContents.debugger.sendCommand('Emulation.setEmitTouchEventsForMouse', {
-      //     enabled: false,
-      //     configuration: 'mobile',
-      //   })
-      // }
     }
   })
 }

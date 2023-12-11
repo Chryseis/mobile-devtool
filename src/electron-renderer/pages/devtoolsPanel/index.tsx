@@ -57,6 +57,7 @@ function DevtoolsPanel(): React.JSX.Element {
       <Header reloadSimulator={reloadSimulator} />
       <MainWrapper>
         <Simulator
+          minWidth='20%'
           maxWidth='60%'
           moving={moving}
           setMoving={setMoving}

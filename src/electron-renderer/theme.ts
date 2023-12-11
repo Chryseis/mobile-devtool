@@ -34,6 +34,7 @@ const theme: DefaultTheme = {
   },
   icon: {
     colorPrimary: '#fff',
+    colorTextQuaternary: 'rgba(255,255,255,0.65)',
   },
   button: {
     colorPrimary: '#7b7b7b',

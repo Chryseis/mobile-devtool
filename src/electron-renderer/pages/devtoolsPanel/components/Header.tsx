@@ -4,7 +4,7 @@ import styled, { useTheme } from 'styled-components'
 import type { IStyledComponent } from 'styled-components'
 import { Avatar, Input, Select, Button } from 'antd'
 import type { InputRef } from 'antd'
-import { ReloadOutlined, EyeOutlined, EllipsisOutlined } from '@ant-design/icons'
+import { ReloadOutlined, QrcodeOutlined, MenuOutlined } from '@ant-design/icons'
 import avatar from '@/assets/images/avatar.jpeg'
 import type { RootState } from '@/store'
 import { changeProtocol, changeURL, confirmSrc } from '@/store/modules/devtools'
@@ -76,8 +76,8 @@ const Header: React.FC<{ reloadSimulator: () => void }> = (props) => {
           }}
         />
         <div className='action-bar'>
-          <Button type='primary' icon={<EyeOutlined />} />
-          <Button type='primary' icon={<EllipsisOutlined />} />
+          <Button type='primary' icon={<QrcodeOutlined />} />
+          <Button type='primary' icon={<MenuOutlined />} />
         </div>
       </FunctionBar>
     </HeaderWrapper>
