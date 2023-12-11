@@ -28,7 +28,7 @@
     "start": "craco start",
     "build": "craco build",
     "dev": "concurrently -k \"yarn start\" \"yarn build:main\" \"yarn electron\"",
-    "build:main": "tsc -w -p tsconfig.electron.json",
+    "build:main": "tsc -w -p src/electron-main/tsconfig.json",
     "electron": "wait-on tcp:3000 && nodemon --exec electron ."
   },
   "eslintConfig": {
