@@ -1,5 +1,5 @@
 import type { Dispatch, ReactElement, RefObject, SetStateAction } from 'react'
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useMemo, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import styled from 'styled-components'
 import { Popover, Tooltip } from 'antd'
@@ -160,32 +160,6 @@ const Simulator: React.FC<{
     ]
   }, [props.devices, props.scaleList, device, scale])
 
-  useEffect(() => {
-    const webview = document.querySelector('#simulatorWebview') as HTMLElement
-
-    webview.addEventListener('mouseenter', () => {
-      console.log('webview mouseenter')
-    })
-
-    webview.addEventListener('mouseleave', () => {
-      console.log('webview mouseleave')
-    })
-
-    document.addEventListener('mousemove', () => {
-      console.log('document mousemove')
-    })
-
-    document.addEventListener('touchmove', () => {
-      console.log('document touchmove')
-    })
-
-    webview.addEventListener('touchmove', () => {
-      console.log('webview touchmove')
-    })
-
-    return () => {}
-  }, [])
-
   const onMouseDown = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
       props.setMoving(true)
@@ -287,7 +261,7 @@ const Simulator: React.FC<{
             <CaretDownOutlined />
           </div>
         </DevicePopover>
-        <Tooltip title='切换触摸模式' color={theme.colorBgBase}>
+        <Tooltip title={isTouch ? '切换鼠标模式' : '切换触摸模式'} color={theme.colorBgBase}>
           <MobileOutlined
             style={{
               color: theme.input.colorTextQuaternary,

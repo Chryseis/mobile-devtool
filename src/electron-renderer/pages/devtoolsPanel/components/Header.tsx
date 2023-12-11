@@ -40,7 +40,7 @@ const HeaderWrapper: IStyledComponent<'web'> = styled.div`
   }
 `
 
-const Header: React.FC<{ reloadSimulator: () => void }> = (props) => {
+const Header: React.FC<{ reloadSimulator: () => void; isLoading: boolean }> = (props) => {
   const inputRef = useRef<InputRef>(null)
 
   const theme = useTheme()
@@ -64,7 +64,11 @@ const Header: React.FC<{ reloadSimulator: () => void }> = (props) => {
             </Select>
           }
           addonAfter={
-            <ReloadOutlined style={{ color: theme.icon.colorPrimary }} spin={false} onClick={props.reloadSimulator} />
+            <ReloadOutlined
+              style={{ color: theme.icon.colorPrimary }}
+              spin={props.isLoading}
+              onClick={props.reloadSimulator}
+            />
           }
           className='search'
           allowClear

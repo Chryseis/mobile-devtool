@@ -28,6 +28,7 @@ const MainWrapper = styled.div`
 
 function DevtoolsPanel(): React.JSX.Element {
   const [moving, setMoving] = useState<boolean>(false)
+  const [loading, setLoading] = useState<boolean>(false)
   const device = useSelector((state: RootState) => state.devtools.device)
 
   const reloadSimulator = () => {
@@ -52,9 +53,22 @@ function DevtoolsPanel(): React.JSX.Element {
     })
   }, [device])
 
+  useEffect(() => {
+    const simulatorWebview = document.querySelector('#simulatorWebview') as ElectronWebViewElement
+    simulatorWebview.addEventListener('did-start-loading', () => {
+      setLoading(true)
+    })
+
+    simulatorWebview.addEventListener('did-stop-loading', () => {
+      setLoading(false)
+    })
+
+    return () => {}
+  }, [])
+
   return (
     <PanelWrapper>
-      <Header reloadSimulator={reloadSimulator} />
+      <Header reloadSimulator={reloadSimulator} isLoading={loading} />
       <MainWrapper>
         <Simulator
           minWidth='20%'

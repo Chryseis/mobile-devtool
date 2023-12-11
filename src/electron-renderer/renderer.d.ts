@@ -3,7 +3,7 @@ declare global {
     electronAPI: IElectronAPI
   }
 
-  interface ElectronWebViewElement extends HTMLWebViewElement {
+  interface ElectronWebViewElement extends HTMLElement {
     openDevTools: () => void
     reload: () => void
     getWebContentsId: () => number
