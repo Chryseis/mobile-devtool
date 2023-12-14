@@ -41,6 +41,12 @@ const theme: DefaultTheme = {
     colorPrimaryHover: '#737373',
     colorPrimaryActive: '#737373',
   },
+  tooltip: {
+    controlHeight: 22,
+    fontSize: 12,
+    colorBgSpotlight: 'rgba(46,46,46,0.9)',
+    lineHeight: 1.3,
+  },
 }
 
 export default theme

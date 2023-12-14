@@ -2,12 +2,20 @@ import React, { useRef } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import styled, { useTheme } from 'styled-components'
 import type { IStyledComponent } from 'styled-components'
-import { Avatar, Input, Select, Button } from 'antd'
+import { Avatar, Input, Select, Button, Popover, QRCode } from 'antd'
 import type { InputRef } from 'antd'
 import { ReloadOutlined, QrcodeOutlined, MenuOutlined } from '@ant-design/icons'
 import avatar from '@/assets/images/avatar.jpeg'
 import type { RootState } from '@/store'
 import { changeProtocol, changeURL, confirmSrc } from '@/store/modules/devtools'
+
+const QRText = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 10px;
+  font-size: ${(props) => props.theme.contentFontSize}px;
+`
 
 const FunctionBar = styled.div`
   flex: 1;
@@ -24,6 +32,7 @@ const FunctionBar = styled.div`
     display: flex;
     align-items: center;
     gap: 15px;
+    margin-right: 20px;
   }
 `
 
@@ -48,6 +57,8 @@ const Header: React.FC<{ reloadSimulator: () => void; isLoading: boolean }> = (p
   const protocol = useSelector((state: RootState) => state.devtools.protocol)
 
   const url = useSelector((state: RootState) => state.devtools.url)
+
+  const src = useSelector((state: RootState) => state.devtools.src)
 
   const dispatch = useDispatch()
 
@@ -80,7 +91,19 @@ const Header: React.FC<{ reloadSimulator: () => void; isLoading: boolean }> = (p
           }}
         />
         <div className='action-bar'>
-          <Button type='primary' icon={<QrcodeOutlined />} />
+          <Popover
+            overlayInnerStyle={{ padding: 0 }}
+            placement='bottom'
+            trigger='click'
+            content={
+              <>
+                <QRText>当前页面二维码</QRText>
+                <QRCode value={src} bordered={false} />
+              </>
+            }
+          >
+            <Button type='primary' icon={<QrcodeOutlined />} />
+          </Popover>
           <Button type='primary' icon={<MenuOutlined />} />
         </div>
       </FunctionBar>

@@ -261,7 +261,7 @@ const Simulator: React.FC<{
             <CaretDownOutlined />
           </div>
         </DevicePopover>
-        <Tooltip title={isTouch ? '切换鼠标模式' : '切换触摸模式'} color={theme.colorBgBase}>
+        <Tooltip title={isTouch ? '切换鼠标模式' : '切换触摸模式'}>
           <MobileOutlined
             style={{
               color: theme.input.colorTextQuaternary,

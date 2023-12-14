@@ -28,6 +28,10 @@ function App(): React.JSX.Element {
               ...theme.component,
               ...theme.button,
             },
+            Tooltip: {
+              ...theme.component,
+              ...theme.tooltip,
+            },
           },
         }}
       >
