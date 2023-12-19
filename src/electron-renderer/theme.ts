@@ -47,6 +47,18 @@ const theme: DefaultTheme = {
     colorBgSpotlight: 'rgba(46,46,46,0.9)',
     lineHeight: 1.3,
   },
+  drawer: {
+    colorBgElevated: '#383838',
+    colorBgMask: 'transparent',
+  },
+  tabs: {
+    inkBarColor: 'rgba(255,255,255,.8)',
+    itemActiveColor: '#fff',
+    itemColor: 'rgba(255,255,255,.8)',
+    itemHoverColor: '#fff',
+    itemSelectedColor: '#fff',
+    colorBorderSecondary: 'transparent',
+  },
 }
 
 export default theme

@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from 'react'
+import React, { RefObject, useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
+import { Drawer } from 'antd'
 import Header from './components/Header'
 import Simulator from './components/Simulator'
 import Devtools from './components/Devtools'
+import FuncTabs from './components/FuncTabs'
 import { emittedOnce } from '@/shared/utils'
 import emulatedDevices from '@/emulated-devices.json'
 import type { First } from '@/renderer'
@@ -20,15 +22,24 @@ const PanelWrapper = styled.div`
   height: 100vh;
 `
 
-const MainWrapper = styled.div`
+const MainWrapper = styled.div<{ ref: RefObject<HTMLDivElement> }>`
   flex: 1;
   display: flex;
   height: 100%;
 `
 
+const FuncDrawer = styled(Drawer)`
+  .ant-drawer-header {
+    display: none;
+  }
+`
+
 function DevtoolsPanel(): React.JSX.Element {
+  const mainWrapperRef = useRef<HTMLDivElement>(null)
+
   const [moving, setMoving] = useState<boolean>(false)
   const [loading, setLoading] = useState<boolean>(false)
+  const [open, setOpen] = useState<boolean>(false)
   const device = useSelector((state: RootState) => state.devtools.device)
 
   const reloadSimulator = () => {
@@ -68,8 +79,12 @@ function DevtoolsPanel(): React.JSX.Element {
 
   return (
     <PanelWrapper>
-      <Header reloadSimulator={reloadSimulator} isLoading={loading} />
-      <MainWrapper>
+      <Header
+        reloadSimulator={reloadSimulator}
+        handleDrawer={() => setOpen((prevState) => !prevState)}
+        isLoading={loading}
+      />
+      <MainWrapper ref={mainWrapperRef}>
         <Simulator
           minWidth='20%'
           maxWidth='60%'
@@ -80,6 +95,15 @@ function DevtoolsPanel(): React.JSX.Element {
         ></Simulator>
         <Devtools moving={moving}></Devtools>
       </MainWrapper>
+      <FuncDrawer
+        className='func-drawer'
+        placement='right'
+        open={open}
+        onClose={() => setOpen(false)}
+        contentWrapperStyle={{ height: mainWrapperRef.current?.clientHeight + 'px', top: 'unset' }}
+      >
+        <FuncTabs />
+      </FuncDrawer>
     </PanelWrapper>
   )
 }

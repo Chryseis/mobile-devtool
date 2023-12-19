@@ -32,6 +32,14 @@ function App(): React.JSX.Element {
               ...theme.component,
               ...theme.tooltip,
             },
+            Drawer: {
+              ...theme.component,
+              ...theme.drawer,
+            },
+            Tabs: {
+              ...theme.component,
+              ...theme.tabs,
+            },
           },
         }}
       >

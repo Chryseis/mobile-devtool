@@ -2,7 +2,7 @@
   "name": "mobile-devtool",
   "version": "0.1.0",
   "private": true,
-  "main": "dist/main.js",
+  "main": "build/main/main.js",
   "dependencies": {
     "@ant-design/icons": "^5.2.6",
     "@reduxjs/toolkit": "^1.9.7",
@@ -28,8 +28,9 @@
   "scripts": {
     "start": "craco start",
     "build": "craco build",
-    "dev": "concurrently -k \"yarn start\" \"yarn build:main\" \"yarn electron\"",
-    "build:main": "tsc -w -p src/electron-main/tsconfig.json",
+    "dev": "concurrently \"yarn start\" \"yarn build:main\" \"yarn build:preload\" \"yarn electron\"",
+    "build:main": "webpack --config webpack.main.config.js",
+    "build:preload": "webpack --config webpack.preload.config.js",
     "electron": "wait-on tcp:3000 && nodemon --exec electron ."
   },
   "eslintConfig": {
@@ -53,9 +54,12 @@
   "devDependencies": {
     "@craco/craco": "^7.1.0",
     "concurrently": "^8.2.2",
+    "copy-webpack-plugin": "^11.0.0",
     "nodemon": "^3.0.1",
     "prettier": "^3.0.3",
     "react-scripts": "^5.0.1",
-    "wait-on": "^7.0.1"
+    "ts-loader": "^9.5.1",
+    "wait-on": "^7.0.1",
+    "webpack-cli": "^5.1.4"
   }
 }

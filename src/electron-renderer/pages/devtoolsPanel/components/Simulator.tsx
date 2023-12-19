@@ -295,7 +295,8 @@ const Simulator: React.FC<{
             useragent={device['user-agent']}
             src={src}
             preload={window.electronAPI.simulatorPreload}
-            webpreferences='scrollBounce=true'
+            webpreferences='scrollBounce=true,sandbox=false'
+            nodeintegration={`true`.toString() as any}
           ></webview>
         </div>
       </SimulatorShell>

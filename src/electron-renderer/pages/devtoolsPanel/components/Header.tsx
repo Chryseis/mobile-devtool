@@ -49,7 +49,7 @@ const HeaderWrapper: IStyledComponent<'web'> = styled.div`
   }
 `
 
-const Header: React.FC<{ reloadSimulator: () => void; isLoading: boolean }> = (props) => {
+const Header: React.FC<{ reloadSimulator: () => void; isLoading: boolean; handleDrawer: () => void }> = (props) => {
   const inputRef = useRef<InputRef>(null)
 
   const theme = useTheme()
@@ -104,7 +104,7 @@ const Header: React.FC<{ reloadSimulator: () => void; isLoading: boolean }> = (p
           >
             <Button type='primary' icon={<QrcodeOutlined />} />
           </Popover>
-          <Button type='primary' icon={<MenuOutlined />} />
+          <Button type='primary' icon={<MenuOutlined />} onClick={props.handleDrawer} />
         </div>
       </FunctionBar>
     </HeaderWrapper>
