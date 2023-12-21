@@ -20,18 +20,8 @@ export function ipcSetDevtools(win: BrowserWindow, webContentsMap: Map<string, W
         viewSize: { width: device.screen.vertical.width, height: device.screen.vertical.height },
         scale: 1,
       })
-
-      simulatorContents.session.webRequest.onBeforeSendHeaders(
-        { urls: ['*://*.91jkys.com/api/*'] },
-        (details, callback) => {
-          callback({
-            requestHeaders: {
-              Cookie: `user_token=`,
-              ...details.requestHeaders,
-            },
-          })
-        }
-      )
     }
+
+    return simulatorContents
   })
 }

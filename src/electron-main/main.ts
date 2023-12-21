@@ -1,7 +1,8 @@
 import path from 'path'
-import { app, BrowserWindow, nativeTheme, WebContents } from 'electron'
+import { app, BrowserWindow, nativeTheme, WebContents, ipcMain } from 'electron'
 import isDev from 'electron-is-dev'
 import { ipcSetDevtools, ipcSetDeviceMetrics, ipcSetTouchEventsForMouse } from './ipcHandler'
+import store from './store'
 
 async function createWindow(): Promise<void> {
   nativeTheme.themeSource = 'dark'
@@ -17,6 +18,12 @@ async function createWindow(): Promise<void> {
       preload: path.join(__dirname, 'preload.js'),
       webviewTag: true,
     },
+  })
+
+  store.set(`${win.webContents.id}.userToken`, '')
+
+  ipcMain.on('get-web-contentId', (event) => {
+    event.returnValue = win.webContents.id
   })
 
   // and load the index.html of the app.
