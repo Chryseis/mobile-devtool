@@ -14,6 +14,7 @@ function App(): React.JSX.Element {
         theme={{
           token: {
             colorPrimary: theme.colorPrimary,
+            colorSplit: theme.colorSplit,
           },
           components: {
             Input: {
@@ -39,6 +40,14 @@ function App(): React.JSX.Element {
             Tabs: {
               ...theme.component,
               ...theme.tabs,
+            },
+            Descriptions: {
+              ...theme.component,
+              ...theme.descriptions,
+            },
+            Form: {
+              ...theme.component,
+              ...theme.form,
             },
           },
         }}

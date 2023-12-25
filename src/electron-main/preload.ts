@@ -11,4 +11,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
   simulatorPreload: `file://${path.join(__dirname, 'preload-simulator.js')}`,
   setUserToken: (userToken: string) => store.set(`${webContentId}.userToken`, userToken),
   getUserToken: () => store.get(`${webContentId}.userToken`),
+  onChangeUserToken: (callback: (newValue?: any, oldValue?: any) => void) =>
+    store.onDidChange(`${webContentId}.userToken`, callback),
 })

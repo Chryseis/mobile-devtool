@@ -11,6 +11,7 @@ const theme: DefaultTheme = {
   borderRadius: 6,
   fontSize: 14,
   contentFontSize: 12,
+  colorSplit: 'rgba(255,255,255,0.5)',
   component: {
     colorBgContainer: '#4b4b4b',
     colorBorder: 'rgba(255,255,255,.3)',
@@ -21,6 +22,7 @@ const theme: DefaultTheme = {
     colorPrimaryActive: '#fff',
     colorTextQuaternary: 'rgba(255,255,255,0.65)',
     colorTextTertiary: 'rgba(255,255,255,0.85)',
+    colorTextPlaceholder: 'rgba(255,255,255,0.65)',
   },
   select: {
     colorPrimary: '#fff',
@@ -58,6 +60,12 @@ const theme: DefaultTheme = {
     itemHoverColor: '#fff',
     itemSelectedColor: '#fff',
     colorBorderSecondary: 'transparent',
+  },
+  descriptions: {
+    colorTextSecondary: '#fff',
+  },
+  form: {
+    labelColor: '#fff',
   },
 }
 

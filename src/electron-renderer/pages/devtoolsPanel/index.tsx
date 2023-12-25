@@ -32,6 +32,10 @@ const FuncDrawer = styled(Drawer)`
   .ant-drawer-header {
     display: none;
   }
+
+  .ant-drawer-body {
+    padding-top: unset;
+  }
 `
 
 function DevtoolsPanel(): React.JSX.Element {
