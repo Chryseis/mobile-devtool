@@ -31,7 +31,8 @@
     "dev": "concurrently \"yarn start\" \"yarn build:main\" \"yarn build:preload\" \"yarn electron\"",
     "build:main": "webpack --config webpack.main.config.js",
     "build:preload": "webpack --config webpack.preload.config.js",
-    "electron": "wait-on tcp:3000 && nodemon --exec electron ."
+    "electron": "wait-on tcp:3000 && nodemon --exec electron .",
+    "craSailer": "node scripts/craSailerTmpl.js"
   },
   "eslintConfig": {
     "extends": [
@@ -60,6 +61,7 @@
     "react-scripts": "^5.0.1",
     "ts-loader": "^9.5.1",
     "wait-on": "^7.0.1",
-    "webpack-cli": "^5.1.4"
+    "webpack-cli": "^5.1.4",
+    "yargs": "^17.7.2"
   }
 }

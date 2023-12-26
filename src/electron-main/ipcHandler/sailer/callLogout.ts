@@ -2,9 +2,9 @@ import type { BrowserWindow } from 'electron'
 import actions, { callbackType } from '@/constants/sailerActions'
 import type { ElementType } from '@/common'
 
-const event: ElementType<typeof actions> = 'aliPay'
+const event: ElementType<typeof actions> = 'callLogout'
 
-export function ipcHandleSailerAliPay(win: BrowserWindow) {
+export function ipcHandleSailerCallLogout(win: BrowserWindow) {
   win.webContents.ipc.on(event, async (e, ...args: any[]) => {
     const callbackId = args[0]
     const params = args[1]
