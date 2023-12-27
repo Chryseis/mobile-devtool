@@ -1,6 +1,10 @@
 const fs = require('fs')
 const yargs = require('yargs/yargs')
 const path = require('path')
+const parser = require('@babel/parser')
+const traverse = require('@babel/traverse').default
+const generate = require('@babel/generator').default
+const template = require('@babel/template').default
 
 const args = yargs(process.argv.slice(2)).parse()
 
@@ -11,17 +15,16 @@ if (!actionName) {
   process.exit(0)
 }
 
-const templateContent = `import type { BrowserWindow } from 'electron'
-import actions, { callbackType } from '@/constants/sailerActions'
+const templateContent = `import { ipcMain } from 'electron'
+import actions, { callbackEnum } from '@/constants/sailerActions'
 import type { ElementType } from '@/common'
 
 const event: ElementType<typeof actions> = '${actionName}'
 
-export function ipcHandleSailer${actionName.charAt(0).toUpperCase()}${actionName.slice(1)}(win: BrowserWindow) {
-  win.webContents.ipc.on(event, async (e, ...args: any[]) => {
-    const callbackId = args[0]
-    const params = args[1]
-    win.webContents.send(event, { type: callbackType.SUCCESS, callbackId, result: { ok: false, message: 'todo' } })
+export function ipcHandleSailer${actionName.charAt(0).toUpperCase()}${actionName.slice(1)}() {
+  ipcMain.handle(event, async (e, ...args: any[]) => {
+    const { callbackId, params } = args[0]
+    return { type: callbackEnum.SUCCESS, callbackId, result: { ok: false, message: 'todo' } }
   })
 }
 `
@@ -37,14 +40,43 @@ function createTemplateFile(filename, templateContent, flag = 'wx') {
 }
 
 function editIndex() {
-  const filename = path.join(__dirname, '../src/electron-main/ipcHandler/index.ts')
+  const filename = path.join(__dirname, '../src/electron-main/ipcHandler/sailer/index.ts')
   fs.readFile(filename, 'utf8', (err, data) => {
-    const content = `${data.replace(/\n$/, '')}\nexport { ipcHandleSailer${actionName
-      .charAt(0)
-      .toUpperCase()}${actionName.slice(1)} } from './sailer/${actionName}'
-`
+    const ast = parser.parse(data, { sourceType: 'module' })
 
-    createTemplateFile(filename, content, 'w')
+    traverse(ast, {
+      enter(path) {
+        const body = path.get('body')
+
+        const importDeclarationPaths = body.filter((statement) => statement.isImportDeclaration())
+
+        const lastImportDeclarationPath = importDeclarationPaths[importDeclarationPaths.length - 1]
+
+        const importStatement = template.ast(
+          `import { ipcHandleSailer${actionName.charAt(0).toUpperCase()}${actionName.slice(1)} } from './${actionName}'`
+        )
+
+        lastImportDeclarationPath.insertAfter(importStatement)
+
+        const exportDeclarationPaths = body.filter((statement) => statement.isExportDeclaration())
+
+        const lastExportDeclarationPath = exportDeclarationPaths[exportDeclarationPaths.length - 1]
+
+        const expressionPaths = lastExportDeclarationPath.get('declaration').get('body').get('body')
+
+        const expressionPath = expressionPaths[expressionPaths.length - 1]
+
+        const expressStatement = template.ast(
+          `ipcHandleSailer${actionName.charAt(0).toUpperCase()}${actionName.slice(1)}()`
+        )
+
+        expressionPath.insertAfter(expressStatement)
+
+        path.stop()
+      },
+    })
+
+    createTemplateFile(filename, generate(ast).code, 'w')
   })
 }
 

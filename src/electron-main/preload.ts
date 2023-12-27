@@ -1,6 +1,8 @@
 import path from 'path'
 import { contextBridge, ipcRenderer } from 'electron'
 import store from './store'
+import { ElementType } from '@/common'
+import actions from '@/constants/sailerActions'
 
 const webContentId = ipcRenderer.sendSync('get-web-contentId')
 
@@ -13,4 +15,5 @@ contextBridge.exposeInMainWorld('electronAPI', {
   getUserToken: () => store.get(`${webContentId}.userToken`),
   onChangeUserToken: (callback: (newValue?: any, oldValue?: any) => void) =>
     store.onDidChange(`${webContentId}.userToken`, callback),
+  onSailerEvent(event: ElementType<typeof actions>) {},
 })

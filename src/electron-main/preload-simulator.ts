@@ -1,11 +1,18 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import store from './store'
-import sailerActions from './constants/sailerActions'
+import sailerActions, { callbackEnum } from './constants/sailerActions'
+import { ValueOf } from './common'
+
+type Result = {
+  type: ValueOf<typeof callbackEnum>
+  callbackId: string
+  result: { ok: boolean; data?: any; message?: string }
+}
 
 const webContentId = ipcRenderer.sendSync('get-web-contentId')
 
 const callbackMap = new Map<
-  any,
+  string,
   { successCallback: (...args: any[]) => void; failCallback: (...args: any[]) => void }
 >()
 
@@ -15,21 +22,20 @@ const nativeCall = (
   successCallback: (...args: any[]) => void,
   failCallback: (...args: any[]) => void
 ) => {
-  const callbackId = Symbol(`${action}${params.toString()}`)
-  ipcRenderer.once(action, (event, args) => {
-    const type = args[0]
-    const callbackId = args[1] as Symbol
-    const result = args[2] as { result: { ok: boolean; data: any } }
+  const callbackId = `${action}_${+new Date()}`
+  callbackMap.set(callbackId, { successCallback, failCallback })
+  ipcRenderer.invoke(action, { callbackId, params }).then((res: Result) => {
+    const type = res.type
+    const callbackId = res.callbackId
+    const result = res.result
     const callback = callbackMap.get(callbackId)
 
-    if (type === 'success') {
+    if (type === callbackEnum.SUCCESS) {
       callback?.successCallback(result)
     } else {
       callback?.failCallback(result)
     }
   })
-  callbackMap.set(callbackId, { successCallback, failCallback })
-  ipcRenderer.send(action, { callbackId, params })
 }
 
 contextBridge.exposeInMainWorld('Sailer', {
@@ -38,7 +44,7 @@ contextBridge.exposeInMainWorld('Sailer', {
   },
   nativeCall,
   on(event: string, callback: (...args: any[]) => void) {
-    ipcRenderer.on(event, (event, args) => {
+    ipcRenderer.on(event, (event, ...args) => {
       callback(args)
     })
   },
@@ -52,7 +58,18 @@ contextBridge.exposeInMainWorld('Sailer', {
     return store.get(`${webContentId}.version`)
   },
   ...sailerActions.reduce((obj, key) => {
-    return { ...obj, [key]: nativeCall.bind(null, key) }
+    return {
+      ...obj,
+      [key]: ({
+        params = undefined,
+        successCallback = (result: { ok: boolean; data: any }) => {
+          console.log('success=', result.data)
+        },
+        failCallback = (error: { ok: boolean; data: any }) => {
+          console.log('fail=', error.data)
+        },
+      } = {}) => nativeCall(key, params, successCallback, failCallback),
+    }
   }, {}),
 })
 

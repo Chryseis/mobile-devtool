@@ -85,8 +85,8 @@ const actions = [
   'callPhone', // 拨打手机
 ] as const
 
-export enum callbackType {
-  SUCCESS = 'success',
-  FAIL = 'fail',
+export enum callbackEnum {
+  'SUCCESS',
+  'FAIL',
 }
 export default actions

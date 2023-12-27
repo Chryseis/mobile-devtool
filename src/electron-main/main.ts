@@ -1,7 +1,7 @@
 import path from 'path'
 import { app, BrowserWindow, nativeTheme, WebContents, ipcMain } from 'electron'
 import isDev from 'electron-is-dev'
-import { ipcSetDevtools, ipcSetDeviceMetrics, ipcSetTouchEventsForMouse } from './ipcHandler'
+import { ipcSetDevtools, ipcSetDeviceMetrics, ipcSetTouchEventsForMouse, ipcHandleSailer } from './ipcHandler'
 import store from './store'
 
 async function createWindow(): Promise<void> {
@@ -41,6 +41,8 @@ async function createWindow(): Promise<void> {
   ipcSetDeviceMetrics(win)
 
   ipcSetTouchEventsForMouse(win, webContentsMap)
+
+  ipcHandleSailer()
 }
 
 // This method will be called when Electron has finished

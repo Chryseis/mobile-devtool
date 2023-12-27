@@ -53,6 +53,11 @@
     ]
   },
   "devDependencies": {
+    "@babel/generator": "^7.23.6",
+    "@babel/parser": "^7.23.6",
+    "@babel/template": "^7.22.15",
+    "@babel/traverse": "^7.23.6",
+    "@babel/types": "^7.23.6",
     "@craco/craco": "^7.1.0",
     "concurrently": "^8.2.2",
     "copy-webpack-plugin": "^11.0.0",
