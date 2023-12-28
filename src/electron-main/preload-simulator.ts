@@ -4,9 +4,15 @@ import sailerActions, { callbackEnum } from './constants/sailerActions'
 import { ValueOf } from './common'
 
 type Result = {
+  returnCode: string
+  returnMsg: string
+  data?: any
+}
+
+type Res = {
   type: ValueOf<typeof callbackEnum>
   callbackId: string
-  result: { ok: boolean; data?: any; message?: string }
+  result: Result
 }
 
 const webContentId = ipcRenderer.sendSync('get-web-contentId')
@@ -24,7 +30,7 @@ const nativeCall = (
 ) => {
   const callbackId = `${action}_${+new Date()}`
   callbackMap.set(callbackId, { successCallback, failCallback })
-  ipcRenderer.invoke(action, { callbackId, params }).then((res: Result) => {
+  ipcRenderer.invoke(action, { callbackId, params }).then((res: Res) => {
     const type = res.type
     const callbackId = res.callbackId
     const result = res.result
@@ -40,7 +46,7 @@ const nativeCall = (
 
 contextBridge.exposeInMainWorld('Sailer', {
   getUserInfo() {
-    return { token: '', uid: '', appver: '' }
+    return { token: store.get(`${webContentId}.userToken`), uid: '', appver: store.get(`${webContentId}.version`) }
   },
   nativeCall,
   on(event: string, callback: (...args: any[]) => void) {
@@ -62,11 +68,11 @@ contextBridge.exposeInMainWorld('Sailer', {
       ...obj,
       [key]: ({
         params = undefined,
-        successCallback = (result: { ok: boolean; data: any }) => {
-          console.log('success=', result.data)
+        successCallback = (result: Result) => {
+          console.log('success=', result.returnCode)
         },
-        failCallback = (error: { ok: boolean; data: any }) => {
-          console.log('fail=', error.data)
+        failCallback = (error: Result) => {
+          console.log('fail=', error.returnCode)
         },
       } = {}) => nativeCall(key, params, successCallback, failCallback),
     }

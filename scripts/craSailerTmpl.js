@@ -24,7 +24,7 @@ const event: ElementType<typeof actions> = '${actionName}'
 export function ipcHandleSailer${actionName.charAt(0).toUpperCase()}${actionName.slice(1)}() {
   ipcMain.handle(event, async (e, ...args: any[]) => {
     const { callbackId, params } = args[0]
-    return { type: callbackEnum.SUCCESS, callbackId, result: { ok: false, message: 'todo' } }
+    return { type: callbackEnum.SUCCESS, callbackId, result: { returnCode: '0000', returnMsg: '调用成功', data: {} } }
   })
 }
 `
