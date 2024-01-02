@@ -1,7 +1,7 @@
 import type { Dispatch, ReactElement, RefObject, SetStateAction } from 'react'
 import React, { useCallback, useMemo, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import styled from 'styled-components'
+import styled, { useTheme } from 'styled-components'
 import { Popover, Tooltip } from 'antd'
 import { CaretDownOutlined, RightOutlined, MobileOutlined } from '@ant-design/icons'
 import { calcWidth } from '@/shared/utils'
@@ -9,7 +9,7 @@ import type { RootState } from '@/store'
 import type { Device } from '@/pages/devtoolsPanel'
 import { ellipsis } from '@/shared/css'
 import { changeScale, changeDevice } from '@/store/modules/devtools'
-import theme from '@/theme'
+import SimulatorOuter from './components/SimulatorOuter'
 
 const DEFAULT_WIDTH = '50vw'
 
@@ -44,18 +44,8 @@ const SimulatorShell = styled.div`
   position: relative;
   overflow: auto;
 
-  .simulator {
-    position: absolute;
-    top: 50px;
-    left: 50%;
-    display: flex;
-    flex-direction: column;
-    transition: 0.3s all;
-    transform-origin: 50% 0;
-
-    .webview {
-      flex: 1;
-    }
+  .webview {
+    flex: 1;
   }
 `
 
@@ -132,14 +122,18 @@ const Simulator: React.FC<{
   setMoving: Dispatch<SetStateAction<boolean>>
   devices: Array<Device>
   scaleList: Array<number>
+  navigatorHeight: number
+  systemBarHeight: number
 }> = (props) => {
   const [isTouch, setIsTouch] = useState<boolean>(false)
   const simulatorRef = useRef<HTMLDivElement>(null)
+  const webviewRef = useRef<ElectronWebViewElement>(null)
   const [simulatorWidth, setSimulatorWidth] = useState<number | string>(DEFAULT_WIDTH)
   const src = useSelector((state: RootState) => state.devtools.src)
   const device = useSelector((state: RootState) => state.devtools.device)
   const scale = useSelector((state: RootState) => state.devtools.scale)
   const dispatch = useDispatch()
+  const theme = useTheme()
 
   const cascaderData = useMemo(() => {
     return [
@@ -206,7 +200,7 @@ const Simulator: React.FC<{
 
         await window.electronAPI.setDeviceMetrics(simulatorContentId, {
           width: device.screen.vertical.width,
-          height: device.screen.vertical.height,
+          height: device.screen.vertical.height - props.navigatorHeight - props.systemBarHeight,
           dpr: device.screen['device-pixel-ratio'],
         })
         simulatorWebview.setUserAgent(device['user-agent'])
@@ -215,7 +209,7 @@ const Simulator: React.FC<{
         dispatch(changeScale(secondLayer as number))
       }
     },
-    [props.devices, dispatch]
+    [props.devices, dispatch, props.navigatorHeight, props.systemBarHeight]
   )
 
   return (
@@ -276,21 +270,24 @@ const Simulator: React.FC<{
         </Tooltip>
       </Toolbar>
       <SimulatorShell>
-        <div
-          className='simulator'
+        <SimulatorOuter
           style={{
             width: device.screen.vertical.width,
             height: device.screen.vertical.height,
             transform: `translate(-50%, 0) scale(${scale})`,
           }}
+          title={webviewRef.current?.getTitle()}
+          navigatorHeight={props.navigatorHeight}
         >
           <webview
+            ref={webviewRef}
             id='simulatorWebview'
+            partition='presist:htmlwebview'
             className='webview'
             style={{
               pointerEvents: props.moving ? 'none' : 'auto',
               width: device.screen.vertical.width,
-              height: device.screen.vertical.height,
+              height: device.screen.vertical.height - props.navigatorHeight - props.systemBarHeight,
             }}
             useragent={device['user-agent']}
             src={src}
@@ -298,7 +295,7 @@ const Simulator: React.FC<{
             webpreferences='scrollBounce=true,sandbox=false'
             nodeintegration={`true`.toString() as any}
           ></webview>
-        </div>
+        </SimulatorOuter>
       </SimulatorShell>
       <SplitLine onMouseDown={onMouseDown} />
     </SimulatorWrapper>

@@ -15,5 +15,11 @@ contextBridge.exposeInMainWorld('electronAPI', {
   getUserToken: () => store.get(`${webContentId}.userToken`),
   onChangeUserToken: (callback: (newValue?: any, oldValue?: any) => void) =>
     store.onDidChange(`${webContentId}.userToken`, callback),
-  onSailerEvent(event: ElementType<typeof actions>) {},
+  onSailerEvent(callback: (event: ElementType<typeof actions>, ...args: any) => void) {
+    ipcRenderer.on('sailer-event', (e, args) => callback(args))
+  },
+  getSailerMap: () =>
+    actions.reduce((result, action) => {
+      return { ...result, [action]: action }
+    }, {}),
 })

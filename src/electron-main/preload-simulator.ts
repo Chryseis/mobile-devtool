@@ -69,10 +69,10 @@ contextBridge.exposeInMainWorld('Sailer', {
       [key]: ({
         params = undefined,
         successCallback = (result: Result) => {
-          console.log('success=', result.returnCode)
+          console.log('success=', result.returnMsg)
         },
         failCallback = (error: Result) => {
-          console.log('fail=', error.returnCode)
+          console.log('fail=', error.returnMsg)
         },
       } = {}) => nativeCall(key, params, successCallback, failCallback),
     }

@@ -14,6 +14,7 @@
     "@types/react": "^  18.2.33",
     "@types/react-dom": "^18.2.14",
     "antd": "^5.11.5",
+    "dayjs": "^1.11.10",
     "device-specs": "^1.0.1",
     "electron": "^28.0.0",
     "electron-is-dev": "^2.0.0",

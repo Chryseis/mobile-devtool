@@ -1,4 +1,4 @@
-import React, { RefObject, useEffect, useRef, useState } from 'react'
+import React, { RefObject, useEffect, useMemo, useRef, useState } from 'react'
 import styled from 'styled-components'
 import { Drawer } from 'antd'
 import Header from './components/Header'
@@ -12,6 +12,8 @@ import { useSelector } from 'react-redux'
 import type { RootState } from '@/store'
 
 const scaleList: Array<number> = [1, 0.85, 0.75, 0.5]
+
+const systemBarHeight = 20
 
 type Device = First<typeof emulatedDevices>
 
@@ -46,6 +48,10 @@ function DevtoolsPanel(): React.JSX.Element {
   const [open, setOpen] = useState<boolean>(false)
   const device = useSelector((state: RootState) => state.devtools.device)
 
+  const navigatorHeight = useMemo(() => {
+    return device['user-agent'].indexOf('iPhone') > -1 ? 44 : 48
+  }, [device])
+
   const reloadSimulator = () => {
     const simulatorWebview = document.querySelector('#simulatorWebview') as ElectronWebViewElement
     simulatorWebview.reload()
@@ -61,12 +67,20 @@ function DevtoolsPanel(): React.JSX.Element {
       const devtoolsContentId = devtoolsWebview?.getWebContentsId()
 
       if (simulatorContentId && devtoolsContentId) {
-        window.electronAPI.send('set-devtools', { simulatorContentId, devtoolsContentId, device })
+        window.electronAPI.send('set-devtools', {
+          simulatorContentId,
+          devtoolsContentId,
+          device: {
+            width: device.screen.vertical.width,
+            height: device.screen.vertical.height - navigatorHeight - systemBarHeight,
+            dpr: device.screen['device-pixel-ratio'],
+          },
+        })
       } else {
         console.warn('webview contentId 获取失败')
       }
     })
-  }, [device])
+  }, [device, navigatorHeight])
 
   useEffect(() => {
     const simulatorWebview = document.querySelector('#simulatorWebview') as ElectronWebViewElement
@@ -96,6 +110,8 @@ function DevtoolsPanel(): React.JSX.Element {
           setMoving={setMoving}
           devices={emulatedDevices as Array<Device>}
           scaleList={scaleList}
+          navigatorHeight={navigatorHeight}
+          systemBarHeight={systemBarHeight}
         ></Simulator>
         <Devtools moving={moving}></Devtools>
       </MainWrapper>
