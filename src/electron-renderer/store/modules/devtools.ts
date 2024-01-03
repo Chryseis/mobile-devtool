@@ -4,7 +4,7 @@ import emulatedDevices from '@/emulated-devices.json'
 import type { Device } from '@/pages/devtoolsPanel'
 
 const initialState: Record<string, any> = {
-  protocol: 'http://',
+  protocol: 'https://',
   url: 'capsule-mobile.91jkys.com/mobile.html#/zh-CN/',
   src: 'https://capsule-mobile.91jkys.com/mobile.html#/zh-CN/',
   device: emulatedDevices.find((o) => o.title === 'iPhone 6/7/8') as Device,
